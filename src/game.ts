@@ -9,7 +9,7 @@ import { Keyboard } from "./keyboard.js";
 
 const WORDS = _words.trim().split("\n");
 
-@customElement("v-game")
+@customElement("yawdle-game")
 export class Game extends LitElement {
   static get styles() {
     return css`
@@ -27,7 +27,7 @@ export class Game extends LitElement {
         grid-gap: 1rem;
       }
 
-      div.words > v-word:not(.attempted) {
+      div.words > yawdle-word:not(.attempted) {
         opacity: 33%;
       }
     `;
@@ -59,7 +59,7 @@ export class Game extends LitElement {
         state: "blank",
       }))
     );
-    (this.shadowRoot?.querySelector("v-keyboard") as Keyboard)?.reset();
+    (this.shadowRoot?.querySelector("yawdle-keyboard") as Keyboard)?.reset();
     this.requestUpdate();
   }
 
@@ -88,7 +88,9 @@ export class Game extends LitElement {
         this.#ended = true;
         this.#success = true;
       }
-      this.dispatchEvent(new CustomEvent("attemptMade", { detail: attempt_ }));
+      this.dispatchEvent(
+        new CustomEvent("yawdleAttemptMade", { detail: attempt_ }),
+      );
       // TODO: persist attempts to localstorage
     }
 
@@ -115,7 +117,7 @@ export class Game extends LitElement {
       }));
     if (valid && submit) {
       this.#data[index].forEach(({ letter, state }) =>
-        (this.shadowRoot?.querySelector("v-keyboard") as Keyboard)?.setKey(
+        (this.shadowRoot?.querySelector("yawdle-keyboard") as Keyboard)?.setKey(
           letter,
           state,
         )
@@ -177,13 +179,13 @@ export class Game extends LitElement {
       <div class="words ${this.#ended ? "ended" : ""}">
         ${
       this.#data.map((data, i) =>
-        html`<v-word .data=${data} class="${
+        html`<yawdle-word .data=${data} class="${
           i <= (this.#ended
               ? this.#attempts.length - 1
               : this.#attempts.length)
             ? "attempted"
             : ""
-        }"></v-word>`
+        }"></yawdle-word>`
       )
     }
       </div> 
@@ -194,6 +196,6 @@ export class Game extends LitElement {
       </div>`
         : ""
     }
-      <v-keyboard></v-keyboard>`;
+      <yawdle-keyboard></yawdle-keyboard>`;
   }
 }

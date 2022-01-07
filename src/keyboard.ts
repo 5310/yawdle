@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import "./letter.js";
 import { Letter } from "./letter.js";
 
-@customElement("v-keyboard")
+@customElement("yawdle-keyboard")
 export class Keyboard extends LitElement {
   static get styles() {
     return css`
@@ -30,13 +30,15 @@ export class Keyboard extends LitElement {
   setKey(letter: string, state = "key") {
     if (!this.shadowRoot) return;
     const key = this.shadowRoot.querySelector(
-      `v-letter[data="${letter}"]`,
+      `yawdle-letter[data="${letter}"]`,
     ) as Letter;
     key.state = state;
   }
   reset() {
     if (!this.shadowRoot) return;
-    const keys = [...this.shadowRoot.querySelectorAll(`v-letter`)] as Letter[];
+    const keys = [
+      ...this.shadowRoot.querySelectorAll(`yawdle-letter`),
+    ] as Letter[];
     keys.forEach((key) => key.state = "key");
   }
 
@@ -55,7 +57,7 @@ export class Keyboard extends LitElement {
       layout.map((row) =>
         html`<div class='row'>${
           row.split("").map((letter) =>
-            html`<v-letter data=${letter} state='key'></v-letter>`
+            html`<yawdle-letter data=${letter} state='key'></yawdle-letter>`
           )
         }</div>`
       )

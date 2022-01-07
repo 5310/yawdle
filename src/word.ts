@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import "./letter.js";
 import { Letter } from "./letter.js";
 
-@customElement("v-word")
+@customElement("yawdle-word")
 export class Word extends LitElement {
   static get styles() {
     return css`
@@ -39,7 +39,7 @@ export class Word extends LitElement {
   render() {
     return html` <div>${
       this.data.map(({ letter, state }) =>
-        html`<v-letter data=${letter} state=${state}></v-letter>`
+        html`<yawdle-letter data=${letter} state=${state}></yawdle-letter>`
       )
     }</div> `;
   }

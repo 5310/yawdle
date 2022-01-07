@@ -1,7 +1,7 @@
 import { customElement, property } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 
-@customElement("v-letter")
+@customElement("yawdle-letter")
 export class Letter extends LitElement {
   static get styles() {
     return css`
