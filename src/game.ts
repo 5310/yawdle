@@ -37,7 +37,7 @@ export class Game extends LitElement {
     `;
   }
 
-  #seed = "plagiarism"; //Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
+  #seed = Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
   #word = "";
   #attemptsLimit = 6;
   #attempts: string[] = [];
