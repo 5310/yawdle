@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import "./word.js";
 import { Word } from "./word.js";
+import "./keyboard.js";
 
 const WORDS = _words.trim().split("\n");
 
@@ -113,6 +114,7 @@ export class Game extends LitElement {
     //TODO: game end and sharing
     return html` <div>
       ${this.#data.map((data) => html`<v-word .data=${data}></v-word>`)}      
-      </div> `;
+      </div> 
+      <v-keyboard></v-keyboard>`;
   }
 }
