@@ -33,9 +33,6 @@ export class Game extends LitElement {
     `;
   }
 
-  // TODO: Refactor properties again
-  // Consider making some actually get-only or at least emit events for each attempt
-
   #seed = "plagiarism"; //Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
   #word = "";
   #attemptsLimit = 6;
@@ -91,6 +88,7 @@ export class Game extends LitElement {
         this.#ended = true;
         this.#success = true;
       }
+      this.dispatchEvent(new CustomEvent("attemptMade", { detail: attempt_ }));
       // TODO: persist attempts to localstorage
     }
 
