@@ -7,20 +7,21 @@ export class Letter extends LitElement {
     return css`
       :host {
         box-sizing: border-box;
+        font-size: var(--font-size, 2rem);
       }
 
       div {
         display: grid;
         place-items: center;
+        cursor: default;
 
-        width: 3rem;
-        height: 3rem;
+        width: 1.5em;
+        height: 1.5em;
         border-radius: 50%;
 
         background: var(--palette--paper--key);
         color: var(--palette--ink--on-dark);
 
-        font-size: 2rem;
         line-height: 0;
       }
 
@@ -53,6 +54,7 @@ export class Letter extends LitElement {
       div.key {
         background: var(--palette--paper--key);
         color: var(--palette--ink--on-dark);
+        /* cursor: pointer; */
       }
     `;
   }

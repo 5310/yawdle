@@ -1,5 +1,6 @@
 import { customElement, property } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
+import "./letter.js";
 import { Letter } from "./letter.js";
 
 @customElement("v-word")
@@ -10,11 +11,12 @@ export class Word extends LitElement {
         box-sizing: border-box;
         display: grid;
         place-items: center;
+        font-size: 2rem;
       }
 
       div {
         display: flex;
-        grid-gap: 1rem;
+        grid-gap: 0.5em;
       }
     `;
   }
