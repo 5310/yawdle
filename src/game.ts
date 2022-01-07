@@ -26,14 +26,19 @@ export class Game extends LitElement {
         display: grid;
         grid-gap: 1rem;
       }
+
+      div.words > v-word:not(.attempted) {
+        opacity: 33%;
+      }
     `;
   }
 
   @property({ reflect: true })
   seed = "plagiarism"; //Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
-
   @property({ reflect: true })
   attemptsLimit = 6;
+
+  attempt = "";
 
   #word = "";
   #attempts: string[] = [];
@@ -58,37 +63,64 @@ export class Game extends LitElement {
     this.requestUpdate();
   }
 
-  submitAttempt(attempt: string) {
+  makeAttempt(attempt: string, submit = false) {
+    // If the game is over, abort
     if (this.#end) return;
-    const attempt_ = Word.validateWord(attempt).slice(0, this.#word.length);
-    if (attempt_.length === this.#word.length) {
-      if (this.#attempts.includes(attempt_)) return;
-      else this.#attempts.push(attempt_);
-      // TODO: persist attempts to localstorage
-      this.#data[this.#attempts.length - 1] = attempt_.split("").map((
-        letter,
-        i,
-      ) => ({
-        letter,
-        state: this.#word[i] === letter
-          ? "exact"
-          : this.#word.includes(letter)
-          ? "partial"
-          : "wrong",
-      }));
-      this.#data[this.#attempts.length - 1].forEach(({ letter, state }) =>
-        (this.shadowRoot?.querySelector("v-keyboard") as Keyboard)?.setKey(
-          letter,
-          state,
-        )
-      );
+
+    // Clean the attmpted word
+    const attempt_ = Word.validateWord(attempt)
+      .slice(0, this.#word.length);
+
+    // If it's redundant, abort
+    if (this.#attempts.includes(attempt_)) return;
+
+    // Check if attempts is a valid dictionary word
+    const valid = WORDS.includes(attempt_);
+
+    // Set the index of the attempt
+    const index = this.#attempts.length;
+
+    // If a valid submission, accept it
+    if (valid && submit) {
+      this.#attempts.push(attempt_);
       if (this.#attempts.length >= this.attemptsLimit) this.#end = true;
       if (attempt_ === this.#word) {
         this.#end = true;
         this.#win = true;
       }
-      this.requestUpdate();
+      // TODO: persist attempts to localstorage
     }
+
+    console.log(attempt_);
+
+    // Reflect the attempt to the UI
+    this.#data[index] = attempt_
+      .padEnd(this.#word.length, " ")
+      .split("")
+      .map((
+        letter,
+        i,
+      ) => ({
+        letter: !submit ? letter : valid ? letter : " ",
+        state: !submit
+          ? letter === " " ? "blank" : "key"
+          : !valid
+          ? "blank"
+          : this.#word[i] === letter
+          ? "exact"
+          : this.#word.includes(letter)
+          ? "partial"
+          : "wrong",
+      }));
+    if (valid && submit) {
+      this.#data[index].forEach(({ letter, state }) =>
+        (this.shadowRoot?.querySelector("v-keyboard") as Keyboard)?.setKey(
+          letter,
+          state,
+        )
+      );
+    }
+    this.requestUpdate();
   }
 
   constructor() {
@@ -98,6 +130,25 @@ export class Game extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.#generateGame();
+    addEventListener("keyup", ({ key }) => {
+      switch (key) {
+        case "Enter":
+          this.makeAttempt(this.attempt, true);
+          this.attempt = "";
+          break;
+        case "Backspace":
+          this.attempt = this.attempt.slice(0, -1);
+          this.makeAttempt(this.attempt);
+          break;
+        default:
+          const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? "";
+          if (letter) {
+            this.attempt += letter;
+            this.makeAttempt(this.attempt);
+          }
+          break;
+      }
+    });
   }
 
   attributeChangedCallback(
@@ -116,12 +167,23 @@ export class Game extends LitElement {
   render() {
     console.log({
       word: this.#word,
+      attempt: this.attempt,
       attempts: this.#attempts,
       data: this.#data,
     });
     //TODO: game end and sharing
-    return html` <div>
-      ${this.#data.map((data) => html`<v-word .data=${data}></v-word>`)}      
+    return html` <div class="words ${this.#end ? "ended" : ""}">
+      ${
+      this.#data.map((data, i) =>
+        html`<v-word .data=${data} class="${
+          i <= (this.#end
+              ? this.#attempts.length - 1
+              : this.#attempts.length)
+            ? "attempted"
+            : ""
+        }"></v-word>`
+      )
+    }      
       </div> 
       <v-keyboard></v-keyboard>`;
   }
