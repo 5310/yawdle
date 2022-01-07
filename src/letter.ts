@@ -54,7 +54,7 @@ export class Letter extends LitElement {
       div.key {
         background: var(--palette--paper--key);
         color: var(--palette--ink--on-dark);
-        /* cursor: pointer; */
+        cursor: pointer; 
       }
     `;
   }

@@ -11,12 +11,19 @@ export class Keyboard extends LitElement {
         box-sizing: border-box;
         display: grid;
         place-items: center;
+        grid-gap: 0.5em;
+        justify-items: stretch;
 
         --font-size: 1.5rem;
         font-size: var(--font-size);
       }
 
-      div {
+      div.keys {
+        display: grid;
+        place-items: center;
+      }
+
+      div.row {
         display: flex;
         grid-gap: 0.25em;
       }
@@ -24,7 +31,52 @@ export class Keyboard extends LitElement {
       div.row:nth-child(3) {
         padding-right: 1.75em;
       }
+
+      div.control {
+        display: grid;
+        grid-gap: 0.25em;
+        grid-auto-flow: row;
+        grid-template-columns: 1fr auto;
+      }
+
+      div.key {
+        height: 1.5em;
+        display: grid;
+        place-items: center;
+        border-radius: 1.5em;
+        background: var(--palette--paper--key);
+        color: var(--palette--ink--on-dark);
+        cursor: pointer;
+      }
+      #backspace {
+        width: 1.5em;
+      }
     `;
+  }
+
+  #handleLetterClick(event: MouseEvent) {
+    this.dispatchEvent(
+      new CustomEvent("yawdleKey", { detail: (event.target as Letter).data }),
+    );
+  }
+
+  #handleKeyup(key: string) {
+    switch (key) {
+      case "Enter":
+        (this.shadowRoot?.querySelector("#enter") as HTMLElement).click();
+        break;
+      case "Backspace":
+        (this.shadowRoot?.querySelector("#backspace") as HTMLElement).click();
+        break;
+      default:
+        const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? "";
+        if (letter) {
+          (this.shadowRoot?.querySelector(
+            `yawdle-letter[data=${letter}]`,
+          ) as HTMLElement).click();
+        }
+        break;
+    }
   }
 
   setKey(letter: string, state = "key") {
@@ -44,6 +96,7 @@ export class Keyboard extends LitElement {
 
   constructor() {
     super();
+    addEventListener("keyup", ({ key }) => this.#handleKeyup(key));
   }
 
   render() {
@@ -53,15 +106,28 @@ export class Keyboard extends LitElement {
       "zxcvbnm",
     ];
     return html` 
-      ${
+      <div class="keys">
+        ${
       layout.map((row) =>
         html`<div class='row'>${
           row.split("").map((letter) =>
-            html`<yawdle-letter data=${letter} state='key'></yawdle-letter>`
+            html
+              `<yawdle-letter data=${letter} state='key' interactive=true @click="${this.#handleLetterClick}"></yawdle-letter>`
           )
         }</div>`
       )
     }
+    </div>
+    <div class="control">
+      <div class="key" id="enter" @click="${(_: Event) =>
+      this.dispatchEvent(
+        new CustomEvent("yawdleKey", { detail: "Enter" }),
+      )}">enter</div>
+      <div class="key" id="backspace" @click="${(_: Event) =>
+      this.dispatchEvent(
+        new CustomEvent("yawdleKey", { detail: "Backspace" }),
+      )}">×</div>
+    </div>
     `;
   }
 }

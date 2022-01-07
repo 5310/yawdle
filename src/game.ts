@@ -63,7 +63,7 @@ export class Game extends LitElement {
     this.requestUpdate();
   }
 
-  makeAttempt(attempt: string, submit = false) {
+  #makeAttempt(attempt: string, submit = false) {
     // If the game is over, abort
     if (this.#ended) return;
 
@@ -126,6 +126,28 @@ export class Game extends LitElement {
     this.requestUpdate();
   }
 
+  #handleKey(key: string) {
+    switch (key) {
+      case "Enter":
+        if (this.#attempt.length === this.#word.length) {
+          this.#makeAttempt(this.#attempt, true);
+          this.#attempt = "";
+        }
+        break;
+      case "Backspace":
+        this.#attempt = this.#attempt.slice(0, -1);
+        this.#makeAttempt(this.#attempt);
+        break;
+      default:
+        const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? "";
+        if (letter) {
+          this.#attempt += letter;
+          this.#makeAttempt(this.#attempt);
+        }
+        break;
+    }
+  }
+
   constructor() {
     super();
   }
@@ -133,25 +155,6 @@ export class Game extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.#generateGame();
-    addEventListener("keyup", ({ key }) => {
-      switch (key) {
-        case "Enter":
-          this.makeAttempt(this.#attempt, true);
-          this.#attempt = "";
-          break;
-        case "Backspace":
-          this.#attempt = this.#attempt.slice(0, -1);
-          this.makeAttempt(this.#attempt);
-          break;
-        default:
-          const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? "";
-          if (letter) {
-            this.#attempt += letter;
-            this.makeAttempt(this.#attempt);
-          }
-          break;
-      }
-    });
   }
 
   attributeChangedCallback(
@@ -196,6 +199,7 @@ export class Game extends LitElement {
       </div>`
         : ""
     }
-      <yawdle-keyboard></yawdle-keyboard>`;
+      <yawdle-keyboard @yawdleKey=${(event: CustomEvent) =>
+      this.#handleKey(event.detail)}></yawdle-keyboard>`;
   }
 }
