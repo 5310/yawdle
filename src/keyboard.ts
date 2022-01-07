@@ -27,7 +27,7 @@ export class Keyboard extends LitElement {
     `;
   }
 
-  setKey(letter: string, state: string) {
+  setKey(letter: string, state = "key") {
     if (!this.shadowRoot) return;
     const key = this.shadowRoot.querySelector(
       `v-letter[data="${letter}"]`,
