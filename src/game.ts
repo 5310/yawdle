@@ -5,6 +5,7 @@ import { css, html, LitElement } from "lit";
 import "./word.js";
 import { Word } from "./word.js";
 import "./keyboard.js";
+import { Keyboard } from "./keyboard.js";
 
 const WORDS = _words.trim().split("\n");
 
@@ -53,6 +54,7 @@ export class Game extends LitElement {
         state: "blank",
       }))
     );
+    (this.shadowRoot?.querySelector("v-keyboard") as Keyboard)?.reset();
     this.requestUpdate();
   }
 
@@ -74,6 +76,12 @@ export class Game extends LitElement {
           ? "partial"
           : "wrong",
       }));
+      this.#data[this.#attempts.length - 1].forEach(({ letter, state }) =>
+        (this.shadowRoot?.querySelector("v-keyboard") as Keyboard)?.setKey(
+          letter,
+          state,
+        )
+      );
       if (this.#attempts.length >= this.attemptsLimit) this.#end = true;
       if (attempt_ === this.#word) {
         this.#end = true;
