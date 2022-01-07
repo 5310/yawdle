@@ -30,6 +30,10 @@ export class Game extends LitElement {
       div.words > v-word:not(.attempted) {
         opacity: 33%;
       }
+
+      div.end {
+        display: none; /* TODO: */
+      }
     `;
   }
 
@@ -172,8 +176,9 @@ export class Game extends LitElement {
       data: this.#data,
     });
     //TODO: game end and sharing
-    return html` <div class="words ${this.#end ? "ended" : ""}">
-      ${
+    return html` 
+      <div class="words ${this.#end ? "ended" : ""}">
+        ${
       this.#data.map((data, i) =>
         html`<v-word .data=${data} class="${
           i <= (this.#end
@@ -183,8 +188,15 @@ export class Game extends LitElement {
             : ""
         }"></v-word>`
       )
-    }      
+    }
       </div> 
+      ${
+      this.#end
+        ? html`<div class="end">
+        ${this.#win ? "Congratulations!" : "Boo!!"}
+      </div>`
+        : ""
+    }
       <v-keyboard></v-keyboard>`;
   }
 }
