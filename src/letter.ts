@@ -69,7 +69,7 @@ export class Letter extends LitElement {
   interactive = false;
 
   static validateLetter(letter: string) {
-    return letter.replace(/[^a-z]/g, "")[0];
+    return letter.replace(/[^a-z ]/g, "")[0];
   }
 
   static validateState(state: string): string | undefined {
