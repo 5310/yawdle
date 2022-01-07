@@ -34,7 +34,7 @@ export class Keyboard extends LitElement {
 
       div.control {
         display: grid;
-        grid-gap: 0.25em;
+        grid-gap: 2em;
         grid-auto-flow: row;
         grid-template-columns: 1fr auto;
       }
@@ -49,7 +49,7 @@ export class Keyboard extends LitElement {
         cursor: pointer;
       }
       #backspace {
-        width: 1.5em;
+        width: 3em;
       }
     `;
   }
