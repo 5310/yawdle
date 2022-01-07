@@ -12,7 +12,6 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "lcg-random": "^2.0.0",
     "lit": "^2.1.0",
     "seedrandom": "^3.0.5"
   },
