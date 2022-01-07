@@ -37,7 +37,7 @@ export class Game extends LitElement {
     `;
   }
 
-  #seed = Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
+  #seed = "plagiarism";
   #word = "";
   #attemptsLimit = 6;
   #attempts: string[] = [];
@@ -47,12 +47,22 @@ export class Game extends LitElement {
   #data: { letter: string; state: string }[][] = [];
 
   #generateGame() {
-    //TODO: Encrypted attempts from share
-    //TODO: Get seed from URL if any
+    // Get or generate seed
+    const params = new URLSearchParams(location.search);
+    this.#seed = params.get("seed") ??
+      Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
+    params.set("seed", this.#seed);
+    window.history.replaceState({}, "", `${location.pathname}?${params}`);
+
+    //TODO: Display encrypted attempts from shared link
+
+    // Select a random word
     const prng = seedrandom(this.#seed);
     const index = Math.floor(prng() * WORDS.length);
     this.#word = WORDS[index];
     console.log("Game generated with the word", this.#word);
+
+    // Reset the game
     this.#attempts = [];
     this.#attempt = "";
     this.#ended = false;
