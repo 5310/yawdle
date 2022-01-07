@@ -32,6 +32,7 @@
     --palette--ink--on-dark: #000000ff;
   }
 }
+/* TODO: below 500px width, shrink font-size */
 
 body {
   margin: 0;
