@@ -11,7 +11,7 @@ export class Keyboard extends LitElement {
         box-sizing: border-box;
         display: grid;
         place-items: center;
-        
+
         --font-size: 1.5rem;
         font-size: var(--font-size);
       }
@@ -27,8 +27,18 @@ export class Keyboard extends LitElement {
     `;
   }
 
-  setKey(letter: string, state: string) {}
-  reset() {}
+  setKey(letter: string, state: string) {
+    if (!this.shadowRoot) return;
+    const key = this.shadowRoot.querySelector(
+      `v-letter[data="${letter}"]`,
+    ) as Letter;
+    key.state = state;
+  }
+  reset() {
+    if (!this.shadowRoot) return;
+    const keys = [...this.shadowRoot.querySelectorAll(`v-letter`)] as Letter[];
+    keys.forEach((key) => key.state = "key");
+  }
 
   constructor() {
     super();
