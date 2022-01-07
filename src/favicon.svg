@@ -1,0 +1,50 @@
+<svg width="128" height="128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    #default {
+      fill: #ffffffff;
+    }
+
+    #blank {
+      fill: #00000010;
+    }
+
+    #wrong {
+      fill: #00000044;
+    }
+
+    #partial {
+      fill: #ffd15aff;
+    }
+
+    #exact {
+      fill: #64c02bff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #default {
+        fill: #222222ff;
+      }
+
+      #blank {
+        fill: #ffffff10;
+      }
+
+      #wrong {
+        fill: #ffffff44;
+      }
+
+      #partial {
+        fill: #886200ff;
+      }
+
+      #exact {
+        fill: #3ea400ff;
+      }
+    }
+  </style>
+  <path id="default" d="M0 0h128v128H0z" />
+  <circle id="blank" cx="38" cy="38" r="24" />
+  <circle id="wrong" cx="90" cy="38" r="24" />
+  <circle id="partial" cx="38" cy="90" r="24" />
+  <circle id="exact" cx="90" cy="90" r="24" />
+</svg>

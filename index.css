@@ -1,0 +1,54 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: 'Bungee', cursive;
+  font-size: 16px;
+
+  --palette--paper--default: #ffffffff;
+  --palette--paper--disabled: #00000004;
+  --palette--paper--blank: #00000010;
+  --palette--paper--wrong: #00000044;
+  --palette--paper--partial: #ffd15aff;
+  --palette--paper--exact: #64c02bff;
+  --palette--paper--key: #000000dd;
+  --palette--ink--on-light: #000000ff;
+  --palette--ink--on-dark: #ffffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    font-family: 'Bungee', cursive;
+    font-size: 16px;
+
+    --palette--paper--default: #222222ff;
+    --palette--paper--disabled: #ffffff04;
+    --palette--paper--blank: #ffffff10;
+    --palette--paper--wrong: #ffffff44;
+    --palette--paper--partial: #886200ff;
+    --palette--paper--exact: #3ea400ff;
+    --palette--paper--key: #ffffffdd;
+    --palette--ink--on-light: #ffffffff;
+    --palette--ink--on-dark: #000000ff;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--palette--paper--default);
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+:root.dark .text--solid {
+  font-family: 'Bungee', cursive;
+}
+.text--hairline {
+  font-family: 'Bungee Hairline', cursive;
+}
+.text--shade {
+  font-family: 'Bungee Shade', cursive;
+}

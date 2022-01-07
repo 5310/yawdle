@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "name": "verbaculary",
+  "version": "0.0.0",
+  "files": [
+    "dist",
+    "types"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "lcg-random": "^2.0.0",
+    "lit": "^2.1.0",
+    "seedrandom": "^3.0.5"
+  },
+  "devDependencies": {
+    "@types/seedrandom": "^3.0.1",
+    "typescript": "^4.4.4",
+    "vite": "^2.7.2"
+  }
+}
