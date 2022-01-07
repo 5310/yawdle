@@ -1,4 +1,4 @@
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import "./letter.js";
 import { Letter } from "./letter.js";
