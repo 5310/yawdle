@@ -191,7 +191,9 @@ export class Game extends LitElement {
       attempts: this.#attempts,
       data: this.#data,
     });
-    //TODO: Game end and sharing
+    // TODO: Seed, attempts, and (challenge, and) sharing button
+    // TODO: Status messages for missed words, and winning
+    // TODO: Game end and sharing
     return html` 
       <div class="words ${this.#ended ? "ended" : ""}">
         ${
