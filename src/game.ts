@@ -30,12 +30,11 @@ export class Game extends LitElement {
       div.words > v-word:not(.attempted) {
         opacity: 33%;
       }
-
-      div.end {
-        display: none; /* TODO: */
-      }
     `;
   }
+
+  // TODO: Refactor properties again
+  // Consider making some actually get-only or at least emit events for each attempt
 
   @property({ reflect: true })
   seed = "plagiarism"; //Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
@@ -192,7 +191,7 @@ export class Game extends LitElement {
       </div> 
       ${
       this.#end
-        ? html`<div class="end">
+        ? html`<div class="end" style="display: none">
         ${this.#win ? "Congratulations!" : "Boo!!"}
       </div>`
         : ""
