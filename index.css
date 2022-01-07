@@ -18,10 +18,10 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --palette--paper--default: #222222ff;
+    --palette--paper--default: #111111ff;
     --palette--paper--disabled: #ffffff04;
-    --palette--paper--blank: #ffffff10;
-    --palette--paper--wrong: #ffffff44;
+    --palette--paper--blank: #ffffff20;
+    --palette--paper--wrong: #ffffff55;
     --palette--paper--partial: #886200ff;
     --palette--paper--exact: #3ea400ff;
     --palette--paper--key: #ffffffdd;
