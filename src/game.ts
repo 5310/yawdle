@@ -30,6 +30,10 @@ export class Game extends LitElement {
       div.words > yawdle-word:not(.attempted) {
         opacity: 33%;
       }
+
+      yawdle-keyboard {
+        opacity: 75%;
+      }
     `;
   }
 
@@ -91,7 +95,7 @@ export class Game extends LitElement {
       this.dispatchEvent(
         new CustomEvent("yawdleAttemptMade", { detail: attempt_ }),
       );
-      // TODO: persist attempts to localstorage
+      // TODO: Persist attempts to localstorage
     }
 
     console.log(attempt_);
@@ -177,7 +181,7 @@ export class Game extends LitElement {
       attempts: this.#attempts,
       data: this.#data,
     });
-    //TODO: game end and sharing
+    //TODO: Game end and sharing
     return html` 
       <div class="words ${this.#ended ? "ended" : ""}">
         ${

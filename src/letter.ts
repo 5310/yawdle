@@ -56,6 +56,8 @@ export class Letter extends LitElement {
         color: var(--palette--ink--on-dark);
         cursor: pointer; 
       }
+
+      /* TODO: Interactive states styling */
     `;
   }
 
