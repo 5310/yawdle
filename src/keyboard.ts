@@ -22,7 +22,7 @@ export class Keyboard extends LitElement {
       }
 
       div.row:nth-child(3) {
-        padding-right: 1.5em;
+        padding-right: 1.75em;
       }
     `;
   }
