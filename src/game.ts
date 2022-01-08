@@ -185,7 +185,7 @@ export class Game extends LitElement {
   #handleKey(key: string) {
     switch (key) {
       case "Enter":
-        if (this.#attempt.length === this.#word.length) {
+        if (this.#attempt.length >= this.#word.length) {
           this.#makeAttempt(this.#attempt, true);
           this.#attempt = "";
         }
