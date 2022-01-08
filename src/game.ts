@@ -18,17 +18,59 @@ export class Game extends LitElement {
         width: 100%;
         height: 100%;
         display: grid;
+        grid-gap: 2em;
         place-items: center;
+        align-content: center;
         padding: 1rem;
+        color: var(--palette--ink--on-light);
       }
 
-      div {
+      :host > div {
         display: grid;
         grid-gap: 1rem;
+        place-items: center;
       }
 
-      div.words > yawdle-word:not(.attempted) {
+      #status {
+        grid-auto-flow: column;
+        width: 18.4rem;
+        height: 1em;
+        cursor: pointer;
+        opacity: 75%;
+      }
+      #status:hover {
+        opacity: 100%;
+      }
+      #status:active {
+        opacity: 100%;
+        margin-top: 0.2em;
+        margin-bottom: -0.2em;
+      }
+      #status > * {
+        height: 100%;
+      }
+      #status > *:first-child {
+        justify-self: start;
+      }
+      #status > .seed {
+        display: flex;
+        grid-gap: 0.25em;
+      }
+      #status > .seed > svg {
+        margin-left: -0.033em;
+        margin-top: 0.066em;
+        fill: var(--palette--ink--on-light);
+      }
+      #status > *:last-child {
+        justify-self: end;
+      }
+
+      #words > yawdle-word:not(.attempted) {
         opacity: 33%;
+      }
+
+      #message {
+        height: 3em;
       }
 
       yawdle-keyboard {
@@ -191,11 +233,33 @@ export class Game extends LitElement {
       attempts: this.#attempts,
       data: this.#data,
     });
-    // TODO: Seed, attempts, and (challenge, and) sharing button
-    // TODO: Status messages for missed words, and winning
-    // TODO: Game end and sharing
+    // TODO: Sharing
+    //  Modal
+    //    Share text with score and link
+    //    Option to include results and message as a challenge
+    // TODO: Message missed attempts
+    //   Must be ephemeral
+    // TODO: Message the game ending
+    //   Activate the share button by proxy
+    //   Also link to Wiktionary with the result if successful
+    //   Never give away the result
+
     return html` 
-      <div class="words ${this.#ended ? "ended" : ""}">
+
+      <div id="status">
+        <div class="seed">
+          <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- <style>
+              path { fill: var(--palette--ink--on-light); }
+            </style> -->
+            <path d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"/>
+            </svg>${this.#seed}</div>
+        <div class="attempts">${
+      this.#ended && !this.#success ? "X" : this.#attempts.length
+    }/${this.#attemptsLimit}</div>
+      </div>
+
+      <div id="words ${this.#ended ? "ended" : ""}">
         ${
       this.#data.map((data, i) =>
         html`<yawdle-word .data=${data} class="${
@@ -208,14 +272,14 @@ export class Game extends LitElement {
       )
     }
       </div> 
-      ${
-      this.#ended
-        ? html`<div class="end" style="display: none">
+
+      <div id="message">
         ${this.#success ? "Congratulations!" : "Boo!!"}
-      </div>`
-        : ""
-    }
+      </div>
+
       <yawdle-keyboard @yawdleKey=${(event: CustomEvent) =>
-      this.#handleKey(event.detail)}></yawdle-keyboard>`;
+      this.#handleKey(event.detail)}></yawdle-keyboard>
+      
+      `;
   }
 }
