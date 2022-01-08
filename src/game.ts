@@ -121,6 +121,8 @@ export class Game extends LitElement {
     );
     (this.shadowRoot?.querySelector("yawdle-keyboard") as Keyboard)?.reset();
     this.requestUpdate();
+
+    // TODO: Load attempts to localstorage if valid
   }
 
   #makeAttempt(attempt: string, submit = false) {
@@ -183,6 +185,7 @@ export class Game extends LitElement {
         )
       );
     }
+    // TODO: post message about attempt
     this.requestUpdate();
   }
 
