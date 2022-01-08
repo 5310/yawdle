@@ -71,6 +71,10 @@ export class Game extends LitElement {
 
       #message {
         height: 3em;
+        opacity: 0;
+        transition-property: opacity;
+        transition-duration: 4s;
+        transition-delay: 2s;
       }
 
       yawdle-keyboard {
