@@ -49,9 +49,9 @@ export class Game extends LitElement {
   #generateGame() {
     // Get or generate seed
     const params = new URLSearchParams(location.search);
-    this.#seed = params.get("seed") ??
+    this.#seed = params.get("s") ??
       Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
-    params.set("seed", this.#seed);
+    params.set("s", this.#seed);
     window.history.replaceState({}, "", `${location.pathname}?${params}`);
 
     //TODO: Display encrypted attempts from shared link
