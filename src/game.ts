@@ -1,4 +1,4 @@
-import _words from "/src/powerlanguage.5.txt?raw";
+import _words from "/src/words.txt?raw";
 import seedrandom from "seedrandom";
 import sleep from "./sleep.js";
 import { customElement } from "lit/decorators.js";
