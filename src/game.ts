@@ -144,9 +144,10 @@ export class Game extends LitElement {
 
     // If it's a redundant submission, abort
     if (submit && this.#attempts.includes(attempt_)) {
+      console.log("ere");
       this.#toastMessage(html`"${attempt_}" has already been attempted`, true);
       this.#attempt = "";
-      this.#makeAttempt(this.#attempt, true);
+      this.#makeAttempt(this.#attempt);
       return;
     }
 
@@ -157,25 +158,29 @@ export class Game extends LitElement {
     const index = this.#attempts.length;
 
     // If a valid submission, accept it
-    if (valid && submit) {
-      this.#attempts.push(attempt_);
-      if (this.#attempts.length >= this.#attemptsLimit) this.#ended = true;
-      if (attempt_ === this.#word) {
-        this.#ended = true;
-        this.#success = true;
+    if (submit) {
+      if (valid) {
+        this.#attempts.push(attempt_);
+        if (this.#attempts.length >= this.#attemptsLimit) this.#ended = true;
+        if (attempt_ === this.#word) {
+          this.#ended = true;
+          this.#success = true;
+        }
+        this.dispatchEvent(
+          new CustomEvent("yawdleAttemptMade", { detail: attempt_ }),
+        );
+        // TODO: Extract these to the template instead
+        if (this.#ended) {
+          this.#toastMessage(html`<span style="cursor: pointer" @click=${() => {
+            (this.shadowRoot?.querySelector("#status") as HTMLElement)?.click();
+          }}>${
+            this.#success ? "Congratulations!" : "Better luck next time!"
+          }</span>`);
+        }
+        // TODO: Persist attempts to localstorage
+      } else {
+        this.#toastMessage(html`"${attempt_}" is not a valid word`, true);
       }
-      this.dispatchEvent(
-        new CustomEvent("yawdleAttemptMade", { detail: attempt_ }),
-      );
-      // TODO: Extract these to the template instead
-      if (this.#ended) {
-        this.#toastMessage(html`<span style="cursor: pointer" @click=${() => {
-          (this.shadowRoot?.querySelector("#status") as HTMLElement)?.click();
-        }}>${
-          this.#success ? "Congratulations!" : "Better luck next time!"
-        }</span>`);
-      }
-      // TODO: Persist attempts to localstorage
     }
 
     console.log(attempt_);
