@@ -16,7 +16,7 @@ export class Word extends LitElement {
 
       div {
         display: flex;
-        grid-gap: 0.5em;
+        gap: 0.5em;
       }
     `;
   }

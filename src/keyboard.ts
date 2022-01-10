@@ -11,7 +11,7 @@ export class Keyboard extends LitElement {
         box-sizing: border-box;
         display: grid;
         place-items: center;
-        grid-gap: 0.5em;
+        gap: 0.75em;
         justify-items: stretch;
 
         --font-size: 1.5rem;
@@ -21,11 +21,12 @@ export class Keyboard extends LitElement {
       div.keys {
         display: grid;
         place-items: center;
+        gap: 0.5em;
       }
 
       div.row {
         display: flex;
-        grid-gap: 0.25em;
+        gap: 0.25em;
       }
 
       div.row:nth-child(3) {

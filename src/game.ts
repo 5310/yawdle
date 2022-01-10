@@ -19,7 +19,7 @@ export class Game extends LitElement {
         width: 100%;
         height: 100%;
         display: grid;
-        grid-gap: 2em;
+        gap: 2em;
         place-items: center;
         align-content: center;
         padding: 1rem;
@@ -28,7 +28,7 @@ export class Game extends LitElement {
 
       :host > div {
         display: grid;
-        grid-gap: 1rem;
+        gap: 1rem;
         place-items: center;
       }
 
@@ -55,11 +55,11 @@ export class Game extends LitElement {
       }
       #status > .seed {
         display: flex;
-        grid-gap: 0.25em;
+        gap: 0.25em;
+        align-items: center;
       }
       #status > .seed > svg {
         margin-left: -0.033em;
-        margin-top: 0.066em;
         fill: var(--palette--ink--on-light);
       }
       #status > *:last-child {
@@ -292,10 +292,7 @@ export class Game extends LitElement {
 
       <div id="status" @click=${() => console.log("status clicked")}>
         <div class="seed">
-          <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- <style>
-              path { fill: var(--palette--ink--on-light); }
-            </style> -->
+          <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"/>
             </svg>${this.#seed}</div>
         <div class="attempts">${
@@ -318,7 +315,8 @@ export class Game extends LitElement {
       </div> 
 
       <div id="message" class="ephemeral">
-        ${this._message}
+        <p>${this.#attempt} is not on the list!</p>
+        <p>Try a new word!</p>
       </div>
 
       <yawdle-keyboard @yawdleKey=${(event: CustomEvent) =>
