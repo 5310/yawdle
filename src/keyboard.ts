@@ -11,7 +11,7 @@ export class Keyboard extends LitElement {
         box-sizing: border-box;
         display: grid;
         place-items: center;
-        gap: 0.75em;
+        gap: 1.5em;
         justify-items: stretch;
 
         --font-size: 1.5rem;
