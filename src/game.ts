@@ -1,7 +1,8 @@
 import _words from "/src/powerlanguage.5.txt?raw";
 import seedrandom from "seedrandom";
-import { customElement } from "lit/decorators.js";
-import { css, html, LitElement } from "lit";
+import sleep from "./sleep.js";
+import { customElement, property } from "lit/decorators.js";
+import { css, html, LitElement, TemplateResult } from "lit";
 import "./word.js";
 import { Word } from "./word.js";
 import "./keyboard.js";
@@ -71,10 +72,12 @@ export class Game extends LitElement {
 
       #message {
         height: 3em;
-        opacity: 0;
+      }
+      #message.ephemeral {
         transition-property: opacity;
-        transition-duration: 4s;
-        transition-delay: 2s;
+        transition-duration: 1s;
+        transition-delay: 0s;
+        opacity: 0;
       }
 
       yawdle-keyboard {
@@ -91,6 +94,11 @@ export class Game extends LitElement {
   #ended = false;
   #success = false;
   #data: { letter: string; state: string }[][] = [];
+
+  @property({ state: true })
+  _message: TemplateResult = html``;
+  @property({ state: true })
+  _messageHide = false;
 
   #generateGame() {
     // Get or generate seed
@@ -153,6 +161,14 @@ export class Game extends LitElement {
       this.dispatchEvent(
         new CustomEvent("yawdleAttemptMade", { detail: attempt_ }),
       );
+      // TODO: Extract these to the template instead
+      if (this.#ended) {
+        this.#toastMessage(html`<span style="cursor: pointer" @click=${() => {
+          (this.shadowRoot?.querySelector("#status") as HTMLElement)?.click();
+        }}>${
+          this.#success ? "Congratulations!" : "Better luck next time!"
+        }</span>`);
+      }
       // TODO: Persist attempts to localstorage
     }
 
@@ -211,6 +227,16 @@ export class Game extends LitElement {
     }
   }
 
+  async #toastMessage(message = html``, ephemeral = false) {
+    const $ = this.shadowRoot?.querySelector("#message") as HTMLElement;
+    this._message = message;
+    $.classList.remove("ephemeral");
+    if (ephemeral) {
+      await sleep();
+      $.classList.add("ephemeral");
+    }
+  }
+
   constructor() {
     super();
   }
@@ -253,7 +279,7 @@ export class Game extends LitElement {
 
     return html` 
 
-      <div id="status">
+      <div id="status" @click=${() => console.log("status clicked")}>
         <div class="seed">
           <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <!-- <style>
@@ -280,8 +306,8 @@ export class Game extends LitElement {
     }
       </div> 
 
-      <div id="message">
-        ${this.#success ? "Congratulations!" : "Boo!!"}
+      <div id="message" class="ephemeral">
+        ${this._message}
       </div>
 
       <yawdle-keyboard @yawdleKey=${(event: CustomEvent) =>
