@@ -9,6 +9,12 @@ import "./keyboard.js";
 import { Keyboard } from "./keyboard.js";
 
 const WORDS = _words.trim().split("\n");
+const SCORE_EMOJI: { [key: string]: string } = {
+  wrong: "⚪",
+  partial: "🟡",
+  exact: "🟢",
+  blank: "⚫",
+};
 
 @customElement("yawdle-game")
 export class Game extends LitElement {
@@ -247,6 +253,40 @@ export class Game extends LitElement {
     }
   }
 
+  async #share(_challenge = false) {
+    const title = `Yawdle #${this.#seed}`;
+    const score = `${
+      this.#ended && !this.#success ? "X" : this.#attempts.length
+    }/${this.#attemptsLimit}`;
+    const scorecard = this.#state.map(
+      (attempt) =>
+        attempt.map(({ state }) => SCORE_EMOJI[state as string] ?? "⚪")
+          .join(""),
+    ).join("\n");
+    const url = location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text: `${score} —
+${scorecard}`,
+          url,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+      return;
+    }
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(
+        `${title}, ${score}
+${scorecard}
+
+${url}}`,
+      );
+    }
+  }
+
   async #toastMessage() {
     // Do pointless manual animation-state management because Lit can't be bothered to add the bare minimum functionality
     const $ = this.shadowRoot?.querySelector("#message") as HTMLElement;
@@ -301,7 +341,7 @@ export class Game extends LitElement {
 
     return html` 
 
-      <div id="status" @click=${() => console.log("status clicked")}>
+      <div id="status" @click=${() => this.#share()}>
         <div class="seed">
           <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"/>
