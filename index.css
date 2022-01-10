@@ -35,6 +35,11 @@
   }
 }
 
+a {
+  color: inherit;
+  text-decoration: underline solid 0.25em;
+}
+
 body {
   margin: 0;
   padding: 0;
