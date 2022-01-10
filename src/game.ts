@@ -264,26 +264,31 @@ export class Game extends LitElement {
           .join(""),
     ).join("\n");
     const url = location.href;
-    if (navigator.share) {
-      try {
+
+    try {
+      if (navigator.share) {
         await navigator.share({
           title,
-          text: `${score} —
-${scorecard}`,
+          text: `${title}, ${score}
+
+${scorecard}
+`,
           url,
         });
-      } catch (e) {
-        console.error(e);
+        return;
       }
-      return;
-    }
-    if (navigator.clipboard) {
-      await navigator.clipboard.writeText(
-        `${title}, ${score}
-${scorecard}
 
-${url}}`,
-      );
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(
+          `${title}, ${score}
+    ${scorecard}
+    
+    ${url}}`,
+        );
+        return;
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 
