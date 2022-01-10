@@ -272,6 +272,7 @@ export class Game extends LitElement {
           text: `${title}, ${score}
 
 ${scorecard}
+
 `,
           url,
         });
