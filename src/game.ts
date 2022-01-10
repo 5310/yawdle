@@ -138,8 +138,9 @@ export class Game extends LitElement {
     if (this.#ended) return;
 
     // Clean the attmpted word
-    let attempt_ = Word.validateWord(attempt)
+    const attempt_ = Word.validateWord(attempt)
       .slice(0, this.#word.length);
+    this.#attempt = attempt_;
 
     // If it's a redundant submission, abort
     if (submit && this.#attempts.includes(attempt_)) {
