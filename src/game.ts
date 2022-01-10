@@ -133,6 +133,7 @@ export class Game extends LitElement {
     // TODO: Load attempts to localstorage if valid
   }
 
+  // FIXME: Redundant attempts failing to show last letter
   #makeAttempt(attempt: string, submit = false) {
     // If the game is over, abort
     if (this.#ended) return;
