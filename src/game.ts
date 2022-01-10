@@ -32,6 +32,11 @@ export class Game extends LitElement {
         place-items: center;
       }
 
+      a {
+        color: inherit;
+        text-decoration: underline solid 0.25em;
+      }
+
       #status {
         grid-auto-flow: column;
         width: 18.4rem;
@@ -70,15 +75,33 @@ export class Game extends LitElement {
         opacity: 33%;
       }
 
-      #message {
-        height: 3em;
-      }
       #message.ephemeral {
         transition-property: opacity;
-        transition-duration: 4s;
+        transition-duration: 2s;
         transition-delay: 1s;
         opacity: 0;
       }
+      #message > * {
+        padding: 0.5em 1em;
+        border-radius: 2em;
+      }
+      #message > .success {
+        background: var(--palette--paper--exact);
+        color: var(--palette--ink--on-dark);
+      }
+      #message > .failure {
+        background: var(--palette--paper--wrong);
+        color: var(--palette--ink--on-light);
+      }
+      #message > :is(.redundant, .invalid) {
+        background: var(--palette--paper--partial);
+        color: var(--palette--ink--on-light);
+      }
+      #message > .blank {
+        opacity: 0;
+      }
+
+      
 
       yawdle-keyboard {
         opacity: 75%;
@@ -91,14 +114,10 @@ export class Game extends LitElement {
   #attemptsLimit = 6;
   #attempts: string[] = [];
   #attempt = "";
+  #state: { letter: string; state: string }[][] = [];
+  #result = "";
   #ended = false;
   #success = false;
-  #data: { letter: string; state: string }[][] = [];
-
-  @property({ state: true })
-  _message: TemplateResult = html``;
-  @property({ state: true })
-  _messageHide = false;
 
   #generateGame() {
     // Get or generate seed
@@ -121,7 +140,7 @@ export class Game extends LitElement {
     this.#attempt = "";
     this.#ended = false;
     this.#success = false;
-    this.#data = Array(this.#attemptsLimit).fill(0).map(() =>
+    this.#state = Array(this.#attemptsLimit).fill(0).map(() =>
       this.#word.split("").fill(" ").map((letter) => ({
         letter,
         state: "blank",
@@ -137,56 +156,45 @@ export class Game extends LitElement {
     // If the game is over, abort
     if (this.#ended) return;
 
+    // Reset result
+    this.#result = "";
+
     // Clean the attmpted word
     const attempt_ = Word.validateWord(attempt)
       .slice(0, this.#word.length);
     this.#attempt = attempt_;
 
     // If it's a redundant submission, abort
-    if (submit && this.#attempts.includes(attempt_)) {
-      console.log("ere");
-      this.#toastMessage(html`"${attempt_}" has already been attempted`, true);
-      this.#attempt = "";
-      this.#makeAttempt(this.#attempt);
-      return;
-    }
-
+    const redundant = this.#attempts.includes(this.#attempt);
     // Check if attempts is a valid dictionary word
-    const valid = WORDS.includes(attempt_);
-
+    const valid = WORDS.includes(this.#attempt);
     // Set the index of the attempt
     const index = this.#attempts.length;
 
     // If a valid submission, accept it
     if (submit) {
-      if (valid) {
-        this.#attempts.push(attempt_);
+      if (redundant) {
+        this.#attempt = "";
+        this.#result = "redundant";
+      } else if (valid) {
+        this.#attempts.push(this.#attempt);
         if (this.#attempts.length >= this.#attemptsLimit) this.#ended = true;
-        if (attempt_ === this.#word) {
+        if (this.#attempt === this.#word) {
           this.#ended = true;
           this.#success = true;
         }
         this.dispatchEvent(
-          new CustomEvent("yawdleAttemptMade", { detail: attempt_ }),
+          new CustomEvent("yawdleAttemptMade", { detail: this.#attempt }),
         );
-        // TODO: Extract these to the template instead
-        if (this.#ended) {
-          this.#toastMessage(html`<span style="cursor: pointer" @click=${() => {
-            (this.shadowRoot?.querySelector("#status") as HTMLElement)?.click();
-          }}>${
-            this.#success ? "Congratulations!" : "Better luck next time!"
-          }</span>`);
-        }
         // TODO: Persist attempts to localstorage
       } else {
-        this.#toastMessage(html`"${attempt_}" is not a valid word`, true);
+        this.#result = "invalid";
+        this.#toastMessage();
       }
     }
 
-    console.log(attempt_);
-
     // Reflect the attempt to the UI
-    this.#data[index] = attempt_
+    this.#state[index] = this.#attempt
       .padEnd(this.#word.length, " ")
       .split("")
       .map((
@@ -204,8 +212,8 @@ export class Game extends LitElement {
           ? "partial"
           : "wrong",
       }));
-    if (valid && submit) {
-      this.#data[index].forEach(({ letter, state }) =>
+    if (submit && !redundant && valid) {
+      this.#state[index].forEach(({ letter, state }) =>
         (this.shadowRoot?.querySelector("yawdle-keyboard") as Keyboard)?.setKey(
           letter,
           state,
@@ -213,7 +221,10 @@ export class Game extends LitElement {
       );
     }
     // TODO: post message about attempt
+    // Update UI
     this.requestUpdate();
+
+    if (submit) this.#toastMessage();
   }
 
   #handleKey(key: string) {
@@ -238,11 +249,11 @@ export class Game extends LitElement {
     }
   }
 
-  async #toastMessage(message = html``, ephemeral = false) {
+  async #toastMessage() {
+    // Do pointless manual animation-state management because Lit can't be bothered to add the bare minimum functionality
     const $ = this.shadowRoot?.querySelector("#message") as HTMLElement;
-    this._message = message;
     $.classList.remove("ephemeral");
-    if (ephemeral) {
+    if (this.#result) {
       await sleep();
       $.classList.add("ephemeral");
     }
@@ -275,7 +286,9 @@ export class Game extends LitElement {
       word: this.#word,
       attempt: this.#attempt,
       attempts: this.#attempts,
-      data: this.#data,
+      ended: this.#ended,
+      success: this.#success,
+      data: this.#state,
     });
     // TODO: Sharing
     //  Modal
@@ -302,7 +315,7 @@ export class Game extends LitElement {
 
       <div id="words ${this.#ended ? "ended" : ""}">
         ${
-      this.#data.map((data, i) =>
+      this.#state.map((data, i) =>
         html`<yawdle-word .data=${data} class="${
           i <= (this.#ended
               ? this.#attempts.length - 1
@@ -314,9 +327,19 @@ export class Game extends LitElement {
     }
       </div> 
 
-      <div id="message" class="ephemeral">
-        <p>${this.#attempt} is not on the list!</p>
-        <p>Try a new word!</p>
+      <div id="message">     
+        ${
+      this.#ended
+        ? this.#success
+          ? html
+            `<p class="success">Congratulations, it's <a href="https://en.wiktionary.org/wiki/${this.#word}#English">${this.#word}</a></p>`
+          : html`<p class="failure">Better luck next time!</p>`
+        : this.#result === "redundant"
+        ? html`<p class="redundant" >Try a new word</p>`
+        : this.#result === "invalid"
+        ? html`<p class="invalid">Not on the list</p>`
+        : html`<p class="blank">...</p>`
+    }
       </div>
 
       <yawdle-keyboard @yawdleKey=${(event: CustomEvent) =>
