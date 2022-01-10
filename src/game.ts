@@ -1,8 +1,8 @@
 import _words from "/src/powerlanguage.5.txt?raw";
 import seedrandom from "seedrandom";
 import sleep from "./sleep.js";
-import { customElement, property } from "lit/decorators.js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
 import "./word.js";
 import { Word } from "./word.js";
 import "./keyboard.js";
