@@ -332,7 +332,7 @@ export class Game extends LitElement {
       this.#ended
         ? this.#success
           ? html
-            `<p class="success">Congratulations, it's <a href="https://en.wiktionary.org/wiki/${this.#word}#English">${this.#word}</a></p>`
+            `<p class="success">You got it, it's <a target="_blank" href="https://en.wiktionary.org/wiki/${this.#word}#English">${this.#word}</a>!</p>`
           : html`<p class="failure">Better luck next time!</p>`
         : this.#result === "redundant"
         ? html`<p class="redundant" >Try a new word</p>`
