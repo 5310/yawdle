@@ -281,9 +281,9 @@ ${scorecard}
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(
           `${title}, ${score}
-    ${scorecard}
+${scorecard}
     
-    ${url}}`,
+${url}}`,
         );
         return;
       }
