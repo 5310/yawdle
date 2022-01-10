@@ -99,9 +99,7 @@ export class Game extends LitElement {
       }
       #message > .blank {
         opacity: 0;
-      }
-
-      
+      }      
 
       yawdle-keyboard {
         opacity: 75%;
