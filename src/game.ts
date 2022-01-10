@@ -75,8 +75,8 @@ export class Game extends LitElement {
       }
       #message.ephemeral {
         transition-property: opacity;
-        transition-duration: 1s;
-        transition-delay: 0s;
+        transition-duration: 4s;
+        transition-delay: 1s;
         opacity: 0;
       }
 
@@ -133,17 +133,21 @@ export class Game extends LitElement {
     // TODO: Load attempts to localstorage if valid
   }
 
-  // FIXME: Redundant attempts failing to show last letter
   #makeAttempt(attempt: string, submit = false) {
     // If the game is over, abort
     if (this.#ended) return;
 
     // Clean the attmpted word
-    const attempt_ = Word.validateWord(attempt)
+    let attempt_ = Word.validateWord(attempt)
       .slice(0, this.#word.length);
 
-    // If it's redundant, abort
-    if (this.#attempts.includes(attempt_)) return;
+    // If it's a redundant submission, abort
+    if (submit && this.#attempts.includes(attempt_)) {
+      this.#toastMessage(html`"${attempt_}" has already been attempted`, true);
+      this.#attempt = "";
+      this.#makeAttempt(this.#attempt, true);
+      return;
+    }
 
     // Check if attempts is a valid dictionary word
     const valid = WORDS.includes(attempt_);
