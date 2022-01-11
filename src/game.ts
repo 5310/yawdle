@@ -129,7 +129,7 @@ export class Game extends LitElement {
     this.#seed = params.get("s") ??
       Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
     params.set("s", this.#seed);
-    window.history.replaceState({}, "", `${location.pathname}?${params}`);
+    self.history.replaceState({}, "", `${location.pathname}?${params}`);
 
     //TODO: Display encrypted attempts from shared link
 
