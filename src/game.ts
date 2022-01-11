@@ -156,7 +156,7 @@ export class Game extends LitElement {
     // TODO: Load attempts to localstorage if valid
   }
 
-  #makeAttempt(attempt: string, submit = false) {
+  makeAttempt(attempt: string, submit = true) {
     // If the game is over, abort
     if (this.#ended) return;
 
@@ -230,26 +230,26 @@ export class Game extends LitElement {
     if (submit) this.#fadeMessage();
 
     // return result for solvers
-    if (submit && valid) return this.#state[index];
+    return submit && valid ? this.#state[index] : null;
   }
 
   #handleKey(key: string) {
     switch (key) {
       case "Enter":
         if (this.#attempt.length >= this.#word.length) {
-          this.#makeAttempt(this.#attempt, true);
+          this.makeAttempt(this.#attempt, true);
           this.#attempt = "";
         }
         break;
       case "Backspace":
         this.#attempt = this.#attempt.slice(0, -1);
-        this.#makeAttempt(this.#attempt);
+        this.makeAttempt(this.#attempt, false);
         break;
       default:
         const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? "";
         if (letter) {
           this.#attempt += letter;
-          this.#makeAttempt(this.#attempt);
+          this.makeAttempt(this.#attempt, false);
         }
         break;
     }
