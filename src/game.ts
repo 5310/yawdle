@@ -8,7 +8,13 @@ import { Word } from "./word.js";
 import "./keyboard.js";
 import { Keyboard } from "./keyboard.js";
 
-const WORDS = _words.trim().split("\n");
+const WORDS: { [word: string]: number } = Object.fromEntries(
+  _words.trim().split("\n").map((entry) => entry.split(" ")).map((
+    [word, freq],
+  ) => [word, parseInt(freq, 10)]),
+);
+// const COMMON_WORDS_LIMIT = 2000;
+const RANDOM_BIAS = Math.LN10;
 const SCORE_EMOJI: { [key: string]: string } = {
   wrong: "⚪",
   partial: "🟡",
@@ -135,8 +141,8 @@ export class Game extends LitElement {
 
     // Select a random word
     const prng = seedrandom(this.#seed);
-    const index = Math.floor(prng() * WORDS.length);
-    this.#word = WORDS[index];
+    const index = Math.floor(prng() ** RANDOM_BIAS * Object.keys(WORDS).length);
+    this.#word = Object.keys(WORDS)[index];
     console.log("Game generated with the word", this.#word);
 
     // Reset the game
@@ -171,7 +177,7 @@ export class Game extends LitElement {
     // If it's a redundant submission, abort
     const redundant = this.#attempts.includes(this.#attempt);
     // Check if attempts is a valid dictionary word
-    const valid = WORDS.includes(this.#attempt);
+    const valid = WORDS[this.#attempt];
     // Set the index of the attempt
     const index = this.#attempts.length;
 
