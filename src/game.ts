@@ -188,7 +188,7 @@ export class Game extends LitElement {
           this.#success = true;
         }
         this.dispatchEvent(
-          new CustomEvent("yawdleAttemptMade", { detail: this.#attempt }),
+          new CustomEvent("yawdleAttemptMade", { detail: this.#state[index] }),
         );
         // TODO: Persist attempts to localstorage
       } else {
@@ -227,8 +227,10 @@ export class Game extends LitElement {
     // TODO: post message about attempt
     // Update UI
     this.requestUpdate();
-
     if (submit) this.#fadeMessage();
+
+    // return result for solvers
+    if (submit && valid) return this.#state[index];
   }
 
   #handleKey(key: string) {
