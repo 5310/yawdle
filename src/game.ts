@@ -193,7 +193,7 @@ export class Game extends LitElement {
         // TODO: Persist attempts to localstorage
       } else {
         this.#result = "invalid";
-        this.#toastMessage();
+        this.#fadeMessage();
       }
     }
 
@@ -228,7 +228,7 @@ export class Game extends LitElement {
     // Update UI
     this.requestUpdate();
 
-    if (submit) this.#toastMessage();
+    if (submit) this.#fadeMessage();
   }
 
   #handleKey(key: string) {
@@ -293,7 +293,7 @@ ${url}}`,
     }
   }
 
-  async #toastMessage() {
+  async #fadeMessage() {
     // Do pointless manual animation-state management because Lit can't be bothered to add the bare minimum functionality
     const $ = this.shadowRoot?.querySelector("#message") as HTMLElement;
     $.classList.remove("ephemeral");
