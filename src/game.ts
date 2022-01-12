@@ -99,7 +99,6 @@ export class Game extends LitElement {
       }
       #status .attempts {
         padding-right: 0.5em;
-        opacity: 66%; 
       }
       #status > *:first-child {
         justify-self: start;
