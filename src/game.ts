@@ -109,16 +109,10 @@ export class Game extends LitElement {
         border-radius: 2em;
       }
       #message > .success {
-        background: var(--palette--paper--exact);
-        color: var(--palette--ink--on-dark);
-      }
-      #message > .failure {
-        background: var(--palette--paper--wrong);
-        color: var(--palette--ink--on-light);
+        color: var(--palette--paper--exact);
       }
       #message > :is(.redundant, .invalid) {
-        background: var(--palette--paper--partial);
-        color: var(--palette--ink--on-light);
+        opacity: 0.75;
       }
       #message > .blank {
         opacity: 0;
