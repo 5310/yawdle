@@ -315,7 +315,7 @@ export class Game extends LitElement {
       "c",
       await tinyEnc.encrypt(this.#seed, JSON.stringify(this.#attempts)),
     );
-    const url = `${location.pathname}?${params}`;
+    const url = `${location.origin}${location.pathname}?${params}`;
 
     // Try to share the content
     try {
