@@ -74,8 +74,7 @@ export class Game extends LitElement {
       }
       #status .button:active {
         opacity: 100%;
-        margin-top: 0.2em;
-        margin-bottom: -0.2em;
+        transform: translateY(0.2em);
       }
       #status .seed > svg {
         margin-left: -0.033em;
@@ -113,11 +112,20 @@ export class Game extends LitElement {
         opacity: 33%;
       }
 
+      @keyframes message-fade {
+        from {
+          opacity: 100%;
+        }
+      
+        to {
+          opacity: 0%;
+        }
+      }
       #message.ephemeral {
-        transition-property: opacity;
-        transition-duration: 2s;
-        transition-delay: 1s;
-        opacity: 0;
+        animation-name: message-fade;
+        animation-delay: 1s;
+        animation-duration: 2s;
+        animation-fill-mode: forwards;
       }
       #message > * {
         padding: 0.5em 1em;
@@ -192,7 +200,7 @@ export class Game extends LitElement {
     if (this.#ended) return;
 
     // Reset result
-    this.#result = "";
+    // this.#result = "";
 
     // Clean the attmpted word
     const attempt_ = Word.validateWord(attempt)
@@ -295,7 +303,7 @@ export class Game extends LitElement {
     }
   }
 
-  async #share(_challenge = false) {
+  async #share() {
     // Compose the shared content
 
     const title = `Yawdle #${this.#seed}`;
@@ -316,6 +324,25 @@ export class Game extends LitElement {
       await tinyEnc.encrypt(this.#seed, JSON.stringify(this.#attempts)),
     );
     const url = `${location.origin}${location.pathname}?${params}`;
+
+    // Animate button
+    const target = this.shadowRoot?.querySelector(
+      "#status .seed",
+    ) as HTMLElement;
+    if (target) {
+      target.animate(
+        [
+          { transform: "translateY(0)" },
+          { transform: "translateY(-0.2em)" },
+          { transform: "translateY(0.1em)" },
+          { transform: "translateY(-0.05em)" },
+          { transform: "translateY(0)" },
+        ],
+        {
+          duration: 500,
+        },
+      );
+    }
 
     // Try to share the content
     try {
@@ -346,15 +373,12 @@ ${url}}`,
     }
   }
 
-  #new() {
-    location.href = location.pathname;
-  }
-
   async #fadeMessage() {
     // Do pointless manual animation-state management because Lit can't be bothered to add the bare minimum functionality
     const $ = this.shadowRoot?.querySelector("#message") as HTMLElement;
     if (!$) return;
     $.classList.remove("ephemeral");
+    await sleep();
     if (this.#result) {
       await sleep();
       $.classList.add("ephemeral");
@@ -399,13 +423,14 @@ ${url}}`,
         <div class="buttons">
           <div class="button seed ${
       this.#ended ? this.#success ? "success" : "failure" : ""
-    }" @click=${() => this.#share()}>
+    }" @click=${this.#share}>
             <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"/>
             </svg>
             ${this.#seed}
           </div>
-          <div class="button new" @click=${() => this.#new()}>
+          <div class="button new" @click=${() =>
+      location.href = location.pathname}>
             <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15.78 11.22a.75.75 0 0 1 0 1.06l-2.5 2.5c-.469.469-1.28.14-1.28-.53V13h-1.837a.375.375 0 0 1-.274-.12l-2.205-2.362L9.35 8.733 11 10.5h1V9.25c0-.67.81-1 1.28-.53l2.5 2.5ZM.375 5.5H3l1.65 1.767 1.666-1.786L4.111 3.12A.375.375 0 0 0 3.837 3H.375A.375.375 0 0 0 0 3.375v1.75c0 .207.168.375.375.375ZM12 5.5v1.25c0 .67.811.999 1.28.53l2.5-2.5a.75.75 0 0 0 0-1.06l-2.5-2.5C12.81.75 12 1.08 12 1.75V3h-1.837a.375.375 0 0 0-.274.12L3 10.5H.375a.375.375 0 0 0-.375.375v1.75c0 .207.168.375.375.375h3.462a.375.375 0 0 0 .274-.12L11 5.5h1Z"/>
             </svg>
