@@ -58,15 +58,25 @@ export class Game extends LitElement {
       }
       #status .buttons {
         display: flex;
-        gap: 0.5em;
+        gap: 0.25em;
+      }
+      #status .buttons > *:first-child {
+        padding-left: 1em;
+        border-top-left-radius: 2em;
+        border-bottom-left-radius: 2em;
+      }
+      #status .buttons > *:last-child {
+        padding-right: 1em;
+        border-top-right-radius: 2em;
+        border-bottom-right-radius: 2em;
       }
       #status .button {
         height: 2em;
         display: flex;
-        gap: 0.25em;
+        gap: 0.5em;
         align-items: center;
-        padding: 0.25em 1em;
-        border-radius: 2em;
+        padding: 0 0.75em;
+        /* border-radius: 2em; */
         background: var(--palette--paper--blank);
       }
       #status .button:hover {
@@ -89,9 +99,6 @@ export class Game extends LitElement {
       }
       #status .seed.failure {
         background: var(--palette--paper--wrong);
-      }
-      #status .new {
-        padding: 0.25em 0.8em;
       }
       #status .new > svg {
         margin-left: -0.033em;
