@@ -120,7 +120,6 @@ export class Letter extends LitElement {
   }
 
   render() {
-    console.log(this.interactive);
     return html` 
       <div class="${this.state} ${this.interactive ? "interactive" : ""}">
         <span>${this.data}</span>
