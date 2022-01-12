@@ -178,7 +178,11 @@ export class Game extends LitElement {
     (this.shadowRoot?.querySelector("yawdle-keyboard") as Keyboard)?.reset();
     this.requestUpdate();
 
-    // TODO: Load attempts to localstorage if valid
+    // Load any previously saved attempts
+    const attempts: string[] = JSON.parse(
+      localStorage.getItem(this.#seed) ?? "[]",
+    );
+    attempts.forEach((attempt) => this.makeAttempt(attempt));
   }
 
   makeAttempt(attempt: string, submit = true) {
@@ -206,16 +210,28 @@ export class Game extends LitElement {
         this.#attempt = "";
         this.#result = "redundant";
       } else if (valid) {
+        // Accept the attempt
         this.#attempts.push(this.#attempt);
         if (this.#attempts.length >= this.#attemptsLimit) this.#ended = true;
         if (this.#attempt === this.#word) {
           this.#ended = true;
           this.#success = true;
         }
+        // Persist to localStorage
+        try {
+          localStorage.setItem(this.#seed, JSON.stringify(this.#attempts));
+        } catch (e) {}
+        // Reflect encrypted attempts in the URL
+        const params = new URLSearchParams(location.search);
+        params.set(
+          "c",
+          tinyEnc.encrypt(this.#seed, JSON.stringify(this.#attempts)),
+        );
+        self.history.replaceState({}, "", `${location.pathname}?${params}`);
+        // Emit attempt as event
         this.dispatchEvent(
           new CustomEvent("yawdleAttemptMade", { detail: this.#state[index] }),
         );
-        // TODO: Persist attempts to localstorage
       } else {
         this.#result = "invalid";
         this.#fadeMessage();
@@ -249,7 +265,6 @@ export class Game extends LitElement {
         )
       );
     }
-    // TODO: post message about attempt
     // Update UI
     this.requestUpdate();
     if (submit) this.#fadeMessage();
@@ -327,6 +342,7 @@ ${url}}`,
   async #fadeMessage() {
     // Do pointless manual animation-state management because Lit can't be bothered to add the bare minimum functionality
     const $ = this.shadowRoot?.querySelector("#message") as HTMLElement;
+    if (!$) return;
     $.classList.remove("ephemeral");
     if (this.#result) {
       await sleep();
@@ -365,16 +381,6 @@ ${url}}`,
       success: this.#success,
       data: this.#state,
     });
-    // TODO: Sharing
-    //  Modal
-    //    Share text with score and link
-    //    Option to include results and message as a challenge
-    // TODO: Message missed attempts
-    //   Must be ephemeral
-    // TODO: Message the game ending
-    //   Activate the share button by proxy
-    //   Also link to Wiktionary with the result if successful
-    //   Never give away the result
 
     return html` 
 
