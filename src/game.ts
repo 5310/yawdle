@@ -223,8 +223,6 @@ export class Game extends LitElement {
         try {
           localStorage.setItem(this.#seed, JSON.stringify(this.#attempts));
         } catch (e) {}
-        // Reflect encrypted attempts in the URL
-        this.#encryptAttempts();
         // Emit attempt as event
         this.dispatchEvent(
           new CustomEvent("yawdleAttemptMade", { detail: this.#state[index] }),
@@ -275,15 +273,6 @@ export class Game extends LitElement {
     return submit && valid ? this.#state[index] : null;
   }
 
-  async #encryptAttempts() {
-    const params = new URLSearchParams(location.search);
-    params.set(
-      "c",
-      await tinyEnc.encrypt(this.#seed, JSON.stringify(this.#attempts)),
-    );
-    self.history.replaceState({}, "", `${location.pathname}?${params}`);
-  }
-
   #handleKey(key: string) {
     switch (key) {
       case "Enter":
@@ -307,17 +296,28 @@ export class Game extends LitElement {
   }
 
   async #share(_challenge = false) {
+    // Compose the shared content
+
     const title = `Yawdle #${this.#seed}`;
+
     const score = `${
       this.#ended && !this.#success ? "X" : this.#attempts.length
     }/${this.#attemptsLimit}`;
+
     const scorecard = this.#state.map(
       (attempt) =>
         attempt.map(({ state }) => SCORE_EMOJI[state as string] ?? "⚪")
           .join(""),
     ).join("\n");
-    const url = location.href;
 
+    const params = new URLSearchParams(location.search);
+    params.set(
+      "c",
+      await tinyEnc.encrypt(this.#seed, JSON.stringify(this.#attempts)),
+    );
+    const url = `${location.pathname}?${params}`;
+
+    // Try to share the content
     try {
       if (navigator.share) {
         await navigator.share({
