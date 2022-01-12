@@ -273,6 +273,25 @@ export class Game extends LitElement {
     // Update UI
     this.requestUpdate();
     if (submit) this.#fadeMessage();
+    const $attempt = this.shadowRoot?.querySelector(
+      `#words > yawdle-word:nth-child(${index + 1})`,
+    ) as HTMLElement;
+    if (submit && !valid && $attempt) {
+      $attempt.animate(
+        [
+          { transform: "translateX(0)" },
+          { transform: "translateX(-0.2em)" },
+          { transform: "translateX(0)" },
+          { transform: "translateX(0.2em)" },
+          { transform: "translateX(0)" },
+          { transform: "translateX(-0.2em)" },
+          { transform: "translateX(0)" },
+        ],
+        {
+          duration: 550,
+        },
+      );
+    }
 
     // Reset attempt if submitted
     if (submit) this.#attempt = "";
@@ -326,11 +345,11 @@ export class Game extends LitElement {
     const url = `${location.origin}${location.pathname}?${params}`;
 
     // Animate button
-    const target = this.shadowRoot?.querySelector(
+    const $ = this.shadowRoot?.querySelector(
       "#status .seed",
     ) as HTMLElement;
-    if (target) {
-      target.animate(
+    if ($) {
+      $.animate(
         [
           { transform: "translateY(0)" },
           { transform: "translateY(-0.2em)" },
@@ -441,7 +460,7 @@ ${url}}`,
     }/${this.#attemptsLimit}</div>
       </div>
 
-      <div id="words ${this.#ended ? "ended" : ""}">
+      <div id="words" class="${this.#ended ? "ended" : ""}">
         ${
       this.#state.map((data, i) =>
         html`<yawdle-word .data=${data} class="${
