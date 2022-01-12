@@ -1,5 +1,7 @@
 import _words from "/src/words.txt?raw";
 import seedrandom from "seedrandom";
+// @ts-ignore
+import tinyEnc from "tiny-enc";
 import sleep from "./sleep.js";
 import { customElement } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
@@ -222,12 +224,7 @@ export class Game extends LitElement {
           localStorage.setItem(this.#seed, JSON.stringify(this.#attempts));
         } catch (e) {}
         // Reflect encrypted attempts in the URL
-        const params = new URLSearchParams(location.search);
-        params.set(
-          "c",
-          tinyEnc.encrypt(this.#seed, JSON.stringify(this.#attempts)),
-        );
-        self.history.replaceState({}, "", `${location.pathname}?${params}`);
+        this.#encryptAttempts();
         // Emit attempt as event
         this.dispatchEvent(
           new CustomEvent("yawdleAttemptMade", { detail: this.#state[index] }),
@@ -271,6 +268,15 @@ export class Game extends LitElement {
 
     // return result for solvers
     return submit && valid ? this.#state[index] : null;
+  }
+
+  async #encryptAttempts() {
+    const params = new URLSearchParams(location.search);
+    params.set(
+      "c",
+      await tinyEnc.encrypt(this.#seed, JSON.stringify(this.#attempts)),
+    );
+    self.history.replaceState({}, "", `${location.pathname}?${params}`);
   }
 
   #handleKey(key: string) {
