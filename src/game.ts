@@ -51,33 +51,44 @@ export class Game extends LitElement {
 
       #status {
         grid-auto-flow: column;
-        width: 18.4rem;
-        height: 1em;
+        width: 18.7rem;
         cursor: pointer;
+      }
+      #status .buttons {
+        display: flex;
+        gap: 0.5em;
+      }
+      #status .button {
+        height: 2em;
+        display: flex;
+        gap: 0.25em;
+        align-items: center;
+        padding: 0.25em 1em;
+        border-radius: 2em;
+        background: var(--palette--paper--blank);
         opacity: 75%;
       }
-      #status:hover {
+      #status .button:hover {
         opacity: 100%;
       }
-      #status:active {
+      #status .button:active {
         opacity: 100%;
         margin-top: 0.2em;
         margin-bottom: -0.2em;
       }
-      #status > * {
-        height: 100%;
+      #status .seed > svg {
+        margin-left: -0.033em;
+        fill: var(--palette--ink--on-light);
+      }
+      #status .new {
+        padding: 0.25em 0.8em;
+      }
+      #status .new > svg {
+        margin-left: -0.033em;
+        fill: var(--palette--ink--on-light);
       }
       #status > *:first-child {
         justify-self: start;
-      }
-      #status > .seed {
-        display: flex;
-        gap: 0.25em;
-        align-items: center;
-      }
-      #status > .seed > svg {
-        margin-left: -0.033em;
-        fill: var(--palette--ink--on-light);
       }
       #status > *:last-child {
         justify-self: end;
@@ -301,6 +312,10 @@ ${url}}`,
     }
   }
 
+  #new() {
+    location.href = location.pathname;
+  }
+
   async #fadeMessage() {
     // Do pointless manual animation-state management because Lit can't be bothered to add the bare minimum functionality
     const $ = this.shadowRoot?.querySelector("#message") as HTMLElement;
@@ -355,11 +370,20 @@ ${url}}`,
 
     return html` 
 
-      <div id="status" @click=${() => this.#share()}>
-        <div class="seed">
-          <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"/>
-            </svg>${this.#seed}</div>
+      <div id="status" >
+        <div class="buttons">
+          <div class="button seed" @click=${() => this.#share()}>
+            <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"/>
+            </svg>
+            ${this.#seed}
+          </div>
+          <div class="button new" @click=${() => this.#new()}>
+            <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.377 1.931a.324.324 0 0 0-.511-.26l-1.27.91-.1.071A7.518 7.518 0 0 0 8.17.433C3.998.433.604 3.828.604 8c0 4.172 3.394 7.567 7.566 7.567a7.564 7.564 0 0 0 6.274-3.336.379.379 0 0 0-.102-.526l-1.893-1.313a.406.406 0 0 0-.56.109 4.477 4.477 0 0 1-3.712 1.976A4.482 4.482 0 0 1 3.7 8a4.482 4.482 0 0 1 4.477-4.476c1.042 0 1.998.362 2.758.96l-.213.154-1.27.91a.323.323 0 0 0 .084.568l5.435 1.851a.32.32 0 0 0 .426-.306l-.02-5.73Z" />
+            </svg>
+          </div>
+        </div>
         <div class="attempts">${
       this.#ended && !this.#success ? "X" : this.#attempts.length
     }/${this.#attemptsLimit}</div>
