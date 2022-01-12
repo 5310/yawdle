@@ -80,12 +80,26 @@ export class Game extends LitElement {
         margin-left: -0.033em;
         fill: var(--palette--ink--on-light);
       }
+      #status .seed.success {
+        background: var(--palette--paper--exact);
+        color: var(--palette--ink--on-dark);
+      }
+      #status .seed.success > svg {
+        fill: var(--palette--ink--on-dark);
+      }
+      #status .seed.failure {
+        background: var(--palette--paper--wrong);
+      }
       #status .new {
         padding: 0.25em 0.8em;
       }
       #status .new > svg {
         margin-left: -0.033em;
         fill: var(--palette--ink--on-light);
+      }
+      #status .attempts {
+        /* padding-right: 0.5em; */
+        opacity: 66%;
       }
       #status > *:first-child {
         justify-self: start;
@@ -366,7 +380,9 @@ ${url}}`,
 
       <div id="status" >
         <div class="buttons">
-          <div class="button seed" @click=${() => this.#share()}>
+          <div class="button seed ${
+      this.#ended ? this.#success ? "success" : "failure" : ""
+    }" @click=${() => this.#share()}>
             <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"/>
             </svg>
