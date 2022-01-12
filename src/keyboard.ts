@@ -1,4 +1,4 @@
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { css, html, LitElement } from "lit";
 import "./letter.js";
 import { Letter } from "./letter.js";
@@ -54,6 +54,11 @@ export class Keyboard extends LitElement {
       }
     `;
   }
+
+  @property()
+  enterLabel = "enter";
+  @property({ type: "boolean" })
+  readOnly = false;
 
   #handleLetterClick(event: MouseEvent) {
     this.dispatchEvent(
@@ -123,7 +128,7 @@ export class Keyboard extends LitElement {
       <div class="key" id="enter" @click="${(_: Event) =>
       this.dispatchEvent(
         new CustomEvent("yawdleKey", { detail: "Enter" }),
-      )}">enter</div>
+      )}">${this.enterLabel}</div>
       <div class="key" id="backspace" @click="${(_: Event) =>
       this.dispatchEvent(
         new CustomEvent("yawdleKey", { detail: "Backspace" }),

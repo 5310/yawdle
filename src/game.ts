@@ -445,7 +445,7 @@ ${url}}`,
     }
       </div>
 
-      <yawdle-keyboard @yawdleKey=${(event: CustomEvent) =>
+      <yawdle-keyboard enterLabel="submit" @yawdleKey=${(event: CustomEvent) =>
       this.#handleKey(event.detail)}></yawdle-keyboard>
       
       `;
