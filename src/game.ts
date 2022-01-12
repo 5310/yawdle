@@ -246,6 +246,8 @@ export class Game extends LitElement {
         letter: !submit ? letter : valid ? letter : " ",
         state: !submit
           ? letter === " " ? "blank" : "key"
+          : redundant
+          ? "blank"
           : !valid
           ? "blank"
           : this.#word[i] === letter
@@ -265,6 +267,9 @@ export class Game extends LitElement {
     // Update UI
     this.requestUpdate();
     if (submit) this.#fadeMessage();
+
+    // Reset attempt if submitted
+    if (submit) this.#attempt = "";
 
     // return result for solvers
     return submit && valid ? this.#state[index] : null;
