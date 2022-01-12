@@ -33,7 +33,7 @@ export class Game extends LitElement {
         width: 100%;
         height: 100%;
         display: grid;
-        gap: 2em;
+        gap: 1.5em;
         place-items: center;
         align-content: center;
         padding: 1rem;
@@ -68,10 +68,9 @@ export class Game extends LitElement {
         padding: 0.25em 1em;
         border-radius: 2em;
         background: var(--palette--paper--blank);
-        opacity: 75%;
       }
       #status .button:hover {
-        opacity: 100%;
+        opacity: 75%;
       }
       #status .button:active {
         opacity: 100%;
@@ -100,8 +99,8 @@ export class Game extends LitElement {
         fill: var(--palette--ink--on-light);
       }
       #status .attempts {
-        /* padding-right: 0.5em; */
-        opacity: 66%;
+        padding-right: 0.5em;
+        opacity: 66%; 
       }
       #status > *:first-child {
         justify-self: start;
@@ -150,7 +149,7 @@ export class Game extends LitElement {
   #ended = false;
   #success = false;
 
-  #generateGame() {
+  async #generateGame() {
     // Get or generate seed
     const params = new URLSearchParams(location.search);
     this.#seed = params.get("s") ??
@@ -181,6 +180,7 @@ export class Game extends LitElement {
     this.requestUpdate();
 
     // Load any previously saved attempts
+    await sleep();
     const attempts: string[] = JSON.parse(
       localStorage.getItem(this.#seed) ?? "[]",
     );
@@ -445,8 +445,10 @@ ${url}}`,
     }
       </div>
 
-      <yawdle-keyboard enterLabel="submit" @yawdleKey=${(event: CustomEvent) =>
-      this.#handleKey(event.detail)}></yawdle-keyboard>
+      <yawdle-keyboard .interactive=${!this
+      .#ended} enterLabel="submit" @yawdleKey=${(
+      event: CustomEvent,
+    ) => this.#handleKey(event.detail)}></yawdle-keyboard>
       
       `;
   }

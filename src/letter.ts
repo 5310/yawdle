@@ -54,10 +54,18 @@ export class Letter extends LitElement {
       div.key {
         background: var(--palette--paper--key);
         color: var(--palette--ink--on-dark);
-        cursor: pointer; 
       }
 
-      /* TODO: Interactive states styling */
+      div.interactive {
+        cursor: pointer;
+      }
+      div.interactive:hover {
+        opacity: 75%;
+      }
+      div.interactive:active {
+        margin-top: 0.1em;
+        margin-bottom: -0.1em;
+      }
     `;
   }
 
@@ -67,7 +75,7 @@ export class Letter extends LitElement {
   @property({ reflect: true })
   state = "blank";
 
-  @property({ type: "boolean" })
+  @property({ reflect: true, type: Boolean })
   interactive = false;
 
   static validateLetter(letter: string) {
@@ -112,6 +120,7 @@ export class Letter extends LitElement {
   }
 
   render() {
+    console.log(this.interactive);
     return html` 
       <div class="${this.state} ${this.interactive ? "interactive" : ""}">
         <span>${this.data}</span>

@@ -34,10 +34,18 @@ export class Keyboard extends LitElement {
       }
 
       div.control {
+        height: 1.5em;
         display: grid;
         grid-gap: 2em;
         grid-auto-flow: row;
         grid-template-columns: 1fr auto;
+      }
+      div.control > *:hover {
+        opacity: 75%;
+      }
+      div.control > *:active {
+        margin-top: 0.1em;
+        margin-bottom: -0.1em;
       }
 
       div.key {
@@ -55,10 +63,14 @@ export class Keyboard extends LitElement {
     `;
   }
 
-  @property()
+  @property({ reflect: true })
   enterLabel = "enter";
-  @property({ type: "boolean" })
-  readOnly = false;
+
+  @property({ reflect: true, type: Boolean })
+  canEnter = true;
+
+  @property({ reflect: true, type: Boolean })
+  interactive = true;
 
   #handleLetterClick(event: MouseEvent) {
     this.dispatchEvent(
@@ -112,27 +124,35 @@ export class Keyboard extends LitElement {
       "zxcvbnm",
     ];
     return html` 
-      <div class="keys">
+      <div class="keys ">
         ${
       layout.map((row) =>
         html`<div class='row'>${
           row.split("").map((letter) =>
             html
-              `<yawdle-letter data=${letter} state='key' interactive=true @click="${this.#handleLetterClick}"></yawdle-letter>`
+              `<yawdle-letter data=${letter} state='key' .interactive=${this.interactive} @click="${this.#handleLetterClick}"></yawdle-letter>`
           )
         }</div>`
       )
     }
     </div>
     <div class="control">
-      <div class="key" id="enter" @click="${(_: Event) =>
-      this.dispatchEvent(
-        new CustomEvent("yawdleKey", { detail: "Enter" }),
-      )}">${this.enterLabel}</div>
+      ${
+      this.interactive
+        ? html`
+      <div class="key ${this.canEnter ? "" : "disabled"}" id="enter" @click="${(
+          _: Event,
+        ) =>
+          this.dispatchEvent(
+            new CustomEvent("yawdleKey", { detail: "Enter" }),
+          )}">${this.enterLabel}</div>
       <div class="key" id="backspace" @click="${(_: Event) =>
-      this.dispatchEvent(
-        new CustomEvent("yawdleKey", { detail: "Backspace" }),
-      )}">×</div>
+          this.dispatchEvent(
+            new CustomEvent("yawdleKey", { detail: "Backspace" }),
+          )}">×</div>
+      `
+        : ""
+    }
     </div>
     `;
   }
