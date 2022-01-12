@@ -111,22 +111,7 @@ export class Game extends LitElement {
       #words > yawdle-word:not(.attempted) {
         opacity: 33%;
       }
-
-      @keyframes message-fade {
-        from {
-          opacity: 100%;
-        }
       
-        to {
-          opacity: 0%;
-        }
-      }
-      #message.ephemeral {
-        animation-name: message-fade;
-        animation-delay: 1s;
-        animation-duration: 2s;
-        animation-fill-mode: forwards;
-      }
       #message > * {
         padding: 0.5em 1em;
         border-radius: 2em;
@@ -237,7 +222,6 @@ export class Game extends LitElement {
         );
       } else {
         this.#result = "invalid";
-        this.#fadeMessage();
       }
     }
 
@@ -272,25 +256,34 @@ export class Game extends LitElement {
     }
     // Update UI
     this.requestUpdate();
-    if (submit) this.#fadeMessage();
-    const $attempt = this.shadowRoot?.querySelector(
-      `#words > yawdle-word:nth-child(${index + 1})`,
-    ) as HTMLElement;
-    if (submit && !valid && $attempt) {
-      $attempt.animate(
-        [
-          { transform: "translateX(0)" },
-          { transform: "translateX(-0.2em)" },
-          { transform: "translateX(0)" },
-          { transform: "translateX(0.2em)" },
-          { transform: "translateX(0)" },
-          { transform: "translateX(-0.2em)" },
-          { transform: "translateX(0)" },
-        ],
-        {
-          duration: 550,
-        },
-      );
+    const $message = this.shadowRoot?.querySelector("#message") as HTMLElement;
+    if ($message && submit) {
+      if (["redundant", "invalid"].includes(this.#result)) {
+        $message.animate(
+          [
+            { transform: "translateX(0)" },
+            { transform: "translateX(-0.2em)" },
+            { transform: "translateX(0)" },
+            { transform: "translateX(0.2em)" },
+            { transform: "translateX(0)" },
+            { transform: "translateX(-0.2em)" },
+            { transform: "translateX(0)" },
+          ],
+          {
+            duration: 500,
+          },
+        );
+        $message.animate(
+          [
+            { opacity: "100%" },
+            { opacity: "0%" },
+          ],
+          {
+            duration: 3000,
+            fill: "forwards",
+          },
+        );
+      }
     }
 
     // Reset attempt if submitted
@@ -389,18 +382,6 @@ ${url}}`,
       }
     } catch (e) {
       console.error(e);
-    }
-  }
-
-  async #fadeMessage() {
-    // Do pointless manual animation-state management because Lit can't be bothered to add the bare minimum functionality
-    const $ = this.shadowRoot?.querySelector("#message") as HTMLElement;
-    if (!$) return;
-    $.classList.remove("ephemeral");
-    await sleep();
-    if (this.#result) {
-      await sleep();
-      $.classList.add("ephemeral");
     }
   }
 
