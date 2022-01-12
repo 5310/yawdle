@@ -111,7 +111,7 @@ export class Game extends LitElement {
       #words > yawdle-word:not(.attempted) {
         opacity: 33%;
       }
-      
+
       #message > * {
         padding: 0.5em 1em;
         border-radius: 2em;
@@ -183,9 +183,6 @@ export class Game extends LitElement {
   makeAttempt(attempt: string, submit = true) {
     // If the game is over, abort
     if (this.#ended) return;
-
-    // Reset result
-    // this.#result = "";
 
     // Clean the attmpted word
     const attempt_ = Word.validateWord(attempt)
