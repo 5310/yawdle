@@ -44,6 +44,7 @@ export class Game extends LitElement {
 
       :host > div {
         display: grid;
+        grid-template: 'container';
         gap: 1rem;
         place-items: center;
       }
@@ -123,15 +124,44 @@ export class Game extends LitElement {
         justify-self: end;
       }
 
-      #words > yawdle-word {
+      #words {
+        place-items: stretch;
+      }
+      #words > * {
+        grid-area: container;
+        display: grid;
+        grid-template: 'container';
+        gap: 1rem;
+        place-items: center;
+      }
+      #words .words > yawdle-word {
         opacity: 33%;
       }
-      #words:not(.unrevealed) > yawdle-word.attempted {
+      #words:not(.unrevealed) .words > yawdle-word.attempted {
         opacity: 100%;
+      }
+      #words .revelation {
+        z-index: 100;
+        box-sizing: border-box;
+        width: 19em;
+        padding: 0.5em;
+        border-radius: 1.5em;
+        align-content: center;
+        line-height: 1.5em;
+        text-align: center;
+        backdrop-filter: blur(8px);
+        opacity: 50%;
+      }
+      #words .revelation > p {
+        margin: 0;
+      }
+      #words:not(.unrevealed) .revelation {
+        display: none;
       }
 
       #message {
         height: 5em;
+        text-align: center;
       }
       #message > * {
         padding: 0.5em 1em;
@@ -190,7 +220,6 @@ export class Game extends LitElement {
     const prng = seedrandom(this.#seed)
     const index = Math.floor(prng() ** RANDOM_BIAS * Object.keys(WORDS).length)
     this.#word = Object.keys(WORDS)[index]
-    console.log('Game generated with the word', this.#word)
 
     // Reset the game
     this.#attempts = []
@@ -217,7 +246,6 @@ export class Game extends LitElement {
       const attempts: string[] = JSON.parse(
         localStorage.getItem(this.#seed) ?? '[]',
       )
-      console.log(attempts)
       attempts.forEach((attempt) => this.makeAttempt(attempt))
     }
   }
@@ -326,7 +354,6 @@ export class Game extends LitElement {
   }
 
   async makeReveal(solution: string, submit = true) {
-    console.log(31321)
     // If the game is over, abort
     if (this.#ended) return
 
@@ -347,13 +374,30 @@ export class Game extends LitElement {
           )
           this.#mode = 'revealed'
           attempts.forEach((attempt) => this.makeAttempt(attempt))
-        } catch {
-          console.log('solution failed')
-        }
+        } catch {}
       } else {
       }
     }
     this.requestUpdate()
+    const $words = this.shadowRoot?.querySelector(
+      '#message.unrevealed > yawdle-word',
+    ) as HTMLElement
+    if ($words && submit) {
+      $words.animate(
+        [
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-0.2em)' },
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(0.2em)' },
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-0.2em)' },
+          { transform: 'translateX(0)' },
+        ],
+        {
+          duration: 500,
+        },
+      )
+    }
   }
 
   #handleKey(key: string) {
@@ -473,10 +517,12 @@ ${url}`,
     }
   }
 
-  #clean() {
+  #clean(trigger = false) {
     const params = new URLSearchParams('')
     params.set('s', this.#seed)
-    location.href = `${location.pathname}?${params}`
+    const href = `${location.pathname}?${params}`
+    if (trigger) location.href = href
+    return href
   }
 
   constructor() {
@@ -502,7 +548,7 @@ ${url}`,
   }
 
   render() {
-    console.log({
+    console.debug({
       word: this.#word,
       attempt: this.#attempt,
       attempts: this.#attempts,
@@ -523,7 +569,7 @@ ${url}`,
               : ''}"
             @click=${() => {
               if (this.#mode === 'solve') this.#share()
-              else this.#clean()
+              else this.#clean(true)
             }}
           >
             ${this.#mode === 'solve'
@@ -575,22 +621,30 @@ ${url}`,
       </div>
 
       <div id="words" class="${this.#ended ? 'ended' : ''} ${this.#mode}">
-        ${this.#state.map(
-          (data, i) =>
-            html`<yawdle-word
-              .data=${data}
-              class="${i <=
-              (this.#ended ? this.#attempts.length - 1 : this.#attempts.length)
-                ? 'attempted'
-                : ''}"
-            ></yawdle-word>`,
-        )}
+        <div class="words">
+          ${this.#state.map(
+            (data, i) =>
+              html`<yawdle-word
+                .data=${data}
+                class="${i <=
+                (this.#ended
+                  ? this.#attempts.length - 1
+                  : this.#attempts.length)
+                  ? 'attempted'
+                  : ''}"
+              ></yawdle-word>`,
+          )}
+        </div>
+        <div class="revelation">
+          <p>A player shared this attempt at solving this puzzle</p>
+          <p><a href="${this.#clean()}?">Solve it</a> for yourself</p>
+          <p>Enter the solution below to reveal this attempt</p>
+        </div>
       </div>
 
       <div id="message" class=${this.#mode}>
         ${this.#mode === 'unrevealed'
           ? html`
-              <p>Reveal shared attempt with the solution</p>
               <yawdle-word
                 class="solution"
                 .data=${this.#solution
