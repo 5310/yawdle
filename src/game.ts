@@ -469,6 +469,18 @@ export class Game extends LitElement {
       'c',
       await tinyEnc.encrypt(this.#word, JSON.stringify(this.#attempts)),
     )
+    params.set(
+      'k',
+      this.#state
+        .filter(
+          (attempt) =>
+            !attempt.some(
+              ({ state }) => !['wrong', 'partial', 'exact'].includes(state),
+            ),
+        )
+        .map((attempt) => attempt.map(({ state }) => state[0]).join(''))
+        .join('-'),
+    )
     const url = `${location.origin}${location.pathname}?${params}`
 
     // Animate button
