@@ -548,16 +548,6 @@ ${url}`,
   }
 
   render() {
-    console.debug({
-      word: this.#word,
-      attempt: this.#attempt,
-      attempts: this.#attempts,
-      ended: this.#ended,
-      success: this.#success,
-      data: this.#state,
-      solution: this.#solution,
-    })
-
     return html`
       <div id="status" class=${this.#mode}>
         <div class="buttons">
