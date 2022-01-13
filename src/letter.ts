@@ -1,7 +1,7 @@
 import { customElement, property } from 'lit/decorators.js'
 import { css, html, LitElement } from 'lit'
 
-type State = 'disabled' | 'blank' | 'wrong' | 'partial' | 'exact' | 'key'
+export type State = 'disabled' | 'blank' | 'wrong' | 'partial' | 'exact' | 'key'
 
 @customElement('yawdle-letter')
 export class Letter extends LitElement {

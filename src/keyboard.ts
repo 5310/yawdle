@@ -1,7 +1,7 @@
 import { customElement, property } from 'lit/decorators.js'
 import { css, html, LitElement } from 'lit'
 import './letter.js'
-import { Letter } from './letter.js'
+import { Letter, State } from './letter.js'
 
 @customElement('yawdle-keyboard')
 export class Keyboard extends LitElement {
@@ -105,7 +105,7 @@ export class Keyboard extends LitElement {
     const key = this.shadowRoot.querySelector(
       `yawdle-letter[data="${letter}"]`,
     ) as Letter
-    key.state = state
+    key.state = state as State
   }
   reset() {
     if (!this.shadowRoot) return

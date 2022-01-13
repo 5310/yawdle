@@ -1,7 +1,7 @@
 import { customElement, property } from 'lit/decorators.js'
 import { css, html, LitElement } from 'lit'
 import './letter.js'
-import { Letter } from './letter.js'
+import { Letter, State } from './letter.js'
 
 @customElement('yawdle-word')
 export class Word extends LitElement {
@@ -22,7 +22,7 @@ export class Word extends LitElement {
   }
 
   @property({ attribute: false })
-  data: { letter: string; state: string }[] = []
+  data: { letter: string; state: State }[] = []
 
   static validateWord(word: string) {
     return word
