@@ -149,8 +149,8 @@ export class Game extends LitElement {
         align-content: center;
         line-height: 1.5em;
         text-align: center;
+        background: var(--palette--paper--blank);
         backdrop-filter: blur(8px);
-        opacity: 50%;
       }
       #words .revelation > p {
         margin: 0;
@@ -239,6 +239,19 @@ export class Game extends LitElement {
       )
     ;(this.shadowRoot?.querySelector('yawdle-keyboard') as Keyboard)?.reset()
     this.requestUpdate()
+
+    // If score colors shared, color them
+    if (this.#mode === 'unrevealed') {
+      const scoreStates = (params.get('k') ?? '')
+        .split('-')
+        .map((s) => s.split(''))
+      scoreStates.forEach((states, i) => {
+        states.forEach((state, j) => {
+          this.#state[i][j].state =
+            { w: 'wrong', p: 'partial', e: 'exact' }[state] ?? 'blank'
+        })
+      })
+    }
 
     // Load any previously saved attempts
     if (this.#mode === 'solve') {
@@ -640,7 +653,7 @@ ${url}`,
         <div class="revelation">
           <p>A player shared this attempt at solving this puzzle</p>
           <p><a href="${this.#clean()}?">Solve it</a> for yourself</p>
-          <p>Enter the solution below to reveal this attempt</p>
+          <p>Enter the solution below to reveal their attempt</p>
         </div>
       </div>
 
