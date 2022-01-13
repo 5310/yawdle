@@ -92,14 +92,14 @@ export class Game extends LitElement {
         margin-left: -0.033em;
         fill: var(--palette--ink--on-light);
       }
-      #status .seed.success {
+      #status.solve .seed.success {
         background: var(--palette--paper--exact);
         color: var(--palette--ink--on-dark);
       }
-      #status .seed.success > svg {
+      #status.solve .seed.success > svg {
         fill: var(--palette--ink--on-dark);
       }
-      #status .seed.failure {
+      #status.solve .seed.failure {
         background: var(--palette--paper--wrong);
       }
       #status .new > svg {
@@ -116,15 +116,21 @@ export class Game extends LitElement {
         justify-self: end;
       }
 
-      #words > yawdle-word:not(.attempted) {
+      #words > yawdle-word {
         opacity: 33%;
       }
+      #words:not(.unrevealed) > yawdle-word.attempted {
+        opacity: 100%;
+      }
 
+      #message {
+        height: 5em;
+      }
       #message > * {
         padding: 0.5em 1em;
         border-radius: 2em;
       }
-      #message > .success {
+      #message.solve > .success {
         color: var(--palette--paper--exact);
       }
       #message > :is(.redundant, .invalid) {
@@ -133,6 +139,13 @@ export class Game extends LitElement {
       #message > .blank {
         opacity: 0;
       }
+      #message.unrevealed > * {
+        margin: 0;
+        padding: 0;
+      }
+      #message.unrevealed > p {
+        opacity: 33%;
+      }
 
       yawdle-keyboard {
         opacity: 75%;
@@ -140,33 +153,33 @@ export class Game extends LitElement {
     `
   }
 
-  #mode: 'solve' | 'reveal' | 'revealed' = 'solve'
+  #mode: 'solve' | 'unrevealed' | 'revealed' = 'solve'
+  #solution = ''
   #seed = 'plagiarism'
   #word = ''
   #attemptsLimit = 6
   #attempts: string[] = []
   #attempt = ''
   #state: { letter: string; state: string }[][] = []
-  #result = ''
+  #result: 'redundant' | 'invalid' | 'valid' | '' = ''
   #ended = false
   #success = false
 
   async #generateGame() {
     const params = new URLSearchParams(location.search)
 
+    // Reset parameters if no seed present
+    if (!params.has('s')) location.href = location.pathname
+
+    // Check if a challenge is present
+    this.#mode = params.has('c') ? 'unrevealed' : 'solve'
+
     // Get or generate seed
     this.#seed =
       params.get('s') ??
       Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join('')
     params.set('s', this.#seed)
-
-    // Check if a challenge is present
-    this.#mode = params.has('c') ? 'reveal' : 'solve'
-
-    // Reset parameters
     self.history.replaceState({}, '', `${location.pathname}?${params}`)
-
-    //TODO: Display encrypted attempts from shared link
 
     // Select a random word
     const prng = seedrandom(this.#seed)
@@ -194,11 +207,14 @@ export class Game extends LitElement {
     this.requestUpdate()
 
     // Load any previously saved attempts
-    await sleep()
-    const attempts: string[] = JSON.parse(
-      localStorage.getItem(this.#seed) ?? '[]',
-    )
-    attempts.forEach((attempt) => this.makeAttempt(attempt))
+    if (this.#mode === 'solve') {
+      await sleep()
+      const attempts: string[] = JSON.parse(
+        localStorage.getItem(this.#seed) ?? '[]',
+      )
+      console.log(attempts)
+      attempts.forEach((attempt) => this.makeAttempt(attempt))
+    }
   }
 
   makeAttempt(attempt: string, submit = true) {
@@ -304,23 +320,79 @@ export class Game extends LitElement {
     return submit && valid ? this.#state[index] : null
   }
 
+  async makeReveal(solution: string, submit = true) {
+    console.log(31321)
+    // If the game is over, abort
+    if (this.#ended) return
+
+    // Clean the attmpted word
+    const solution_ = Word.validateWord(solution).slice(0, this.#word.length)
+    this.#solution = solution_
+
+    // Check if attempts is a valid dictionary word
+    const valid = WORDS[this.#solution]
+
+    if (submit) {
+      if (valid) {
+        try {
+          const params = new URLSearchParams(location.search)
+          const challenge = params.get('c')
+          const attempts: string[] = JSON.parse(
+            await tinyEnc.decrypt(this.#solution, challenge),
+          )
+          this.#mode = 'revealed'
+          attempts.forEach((attempt) => this.makeAttempt(attempt))
+        } catch {
+          console.log('solution failed')
+        }
+      } else {
+      }
+    }
+    this.requestUpdate()
+  }
+
   #handleKey(key: string) {
-    switch (key) {
-      case 'Enter':
-        if (this.#attempt.length >= this.#word.length) {
-          this.makeAttempt(this.#attempt, true)
-          this.#attempt = ''
+    switch (this.#mode) {
+      case 'solve':
+        switch (key) {
+          case 'Enter':
+            if (this.#attempt.length >= this.#word.length) {
+              this.makeAttempt(this.#attempt, true)
+              this.#attempt = ''
+            }
+            break
+          case 'Backspace':
+            this.#attempt = this.#attempt.slice(0, -1)
+            this.makeAttempt(this.#attempt, false)
+            break
+          default:
+            const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? ''
+            if (letter) {
+              this.#attempt += letter
+              this.makeAttempt(this.#attempt, false)
+            }
+            break
         }
         break
-      case 'Backspace':
-        this.#attempt = this.#attempt.slice(0, -1)
-        this.makeAttempt(this.#attempt, false)
-        break
-      default:
-        const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? ''
-        if (letter) {
-          this.#attempt += letter
-          this.makeAttempt(this.#attempt, false)
+      case 'unrevealed':
+        switch (key) {
+          case 'Enter':
+            if (this.#solution.length >= this.#word.length) {
+              this.makeReveal(this.#solution, true)
+              this.#solution = ''
+            }
+            break
+          case 'Backspace':
+            this.#solution = this.#solution.slice(0, -1)
+            this.makeReveal(this.#solution, false)
+            break
+          default:
+            const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? ''
+            if (letter) {
+              this.#solution += letter
+              this.makeReveal(this.#solution, false)
+            }
+            break
         }
         break
     }
@@ -346,7 +418,7 @@ export class Game extends LitElement {
     const params = new URLSearchParams(location.search)
     params.set(
       'c',
-      await tinyEnc.encrypt(this.#seed, JSON.stringify(this.#attempts)),
+      await tinyEnc.encrypt(this.#word, JSON.stringify(this.#attempts)),
     )
     const url = `${location.origin}${location.pathname}?${params}`
 
@@ -387,7 +459,7 @@ ${scorecard}
           `${title}, ${score}
 ${scorecard}
     
-${url}}`,
+${url}`,
         )
         return
       }
@@ -426,6 +498,7 @@ ${url}}`,
       ended: this.#ended,
       success: this.#success,
       data: this.#state,
+      solution: this.#solution,
     })
 
     return html`
@@ -489,22 +562,68 @@ ${url}}`,
       </div>
 
       <div id="message" class=${this.#mode}>
-        ${this.#ended
-          ? this.#success
-            ? html`<p class="success">
-                You got it, it's
-                <a
-                  target="_blank"
-                  href="https://en.wiktionary.org/wiki/${this.#word}#English"
-                  >${this.#word}</a
-                >!
-              </p>`
-            : html`<p class="failure">Better luck next time!</p>`
-          : this.#result === 'redundant'
-          ? html`<p class="redundant">Try a new word</p>`
-          : this.#result === 'invalid'
-          ? html`<p class="invalid">Not on the list</p>`
-          : html`<p class="blank">...</p>`}
+        ${this.#mode === 'unrevealed'
+          ? html`
+              <p>Enter the solution to reveal attempts</p>
+              <yawdle-word
+                class="solution"
+                .data=${this.#solution
+                  .slice(0, this.#word.length)
+                  .padEnd(this.#word.length, ' ')
+                  .split('')
+                  .map((letter) => ({
+                    letter: ' ',
+                    state: letter === ' ' ? 'blank' : 'key',
+                  }))}
+              >
+              </yawdle-word>
+            `
+          : ''}
+        ${this.#mode === 'revealed'
+          ? this.#ended
+            ? this.#success
+              ? html`<p class="success">
+                  This player solved
+                  <a
+                    target="_blank"
+                    href="https://en.wiktionary.org/wiki/${this.#word}#English"
+                    >${this.#word}</a
+                  >
+                  in ${this.#attempts.length}
+                  ${this.#attempts.length === 1 ? 'turn' : 'turns'}
+                </p>`
+              : html`<p class="failure">
+                  This player failed to solve
+                  <a
+                    target="_blank"
+                    href="https://en.wiktionary.org/wiki/${this.#word}#English"
+                    >${this.#word}</a
+                  >
+                </p>`
+            : this.#result === 'redundant'
+            ? html`<p class="redundant">Try a new word</p>`
+            : this.#result === 'invalid'
+            ? html`<p class="invalid">Not on the list</p>`
+            : html`<p class="blank">...</p>`
+          : ''}
+        ${this.#mode === 'solve'
+          ? this.#ended
+            ? this.#success
+              ? html`<p class="success">
+                  You got it, it's
+                  <a
+                    target="_blank"
+                    href="https://en.wiktionary.org/wiki/${this.#word}#English"
+                    >${this.#word}</a
+                  >!
+                </p>`
+              : html`<p class="failure">Better luck next time!</p>`
+            : this.#result === 'redundant'
+            ? html`<p class="redundant">Try a new word</p>`
+            : this.#result === 'invalid'
+            ? html`<p class="invalid">Not on the list</p>`
+            : html`<p class="blank">...</p>`
+          : ''}
       </div>
 
       <yawdle-keyboard
