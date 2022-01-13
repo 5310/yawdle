@@ -1,6 +1,8 @@
 import { customElement, property } from 'lit/decorators.js'
 import { css, html, LitElement } from 'lit'
 
+type State = 'disabled' | 'blank' | 'wrong' | 'partial' | 'exact' | 'key'
+
 @customElement('yawdle-letter')
 export class Letter extends LitElement {
   static get styles() {
@@ -74,7 +76,7 @@ export class Letter extends LitElement {
   data = ' '
 
   @property({ reflect: true })
-  state = 'blank'
+  state: State = 'blank'
 
   @property({ reflect: true, type: Boolean })
   interactive = false
@@ -83,11 +85,11 @@ export class Letter extends LitElement {
     return letter.replace(/[^a-z ]/g, '')[0]
   }
 
-  static validateState(state: string): string | undefined {
+  static validateState(state: string): State | undefined {
     return ['disabled', 'blank', 'wrong', 'partial', 'exact', 'key'].includes(
       state,
     )
-      ? state
+      ? (state as State)
       : undefined
   }
 
