@@ -1,1 +1,1 @@
-export default (ms = 0) => new Promise((_) => setTimeout(_, ms));
+export default (ms = 0) => new Promise((_) => setTimeout(_, ms))

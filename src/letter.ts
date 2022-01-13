@@ -1,7 +1,7 @@
-import { customElement, property } from "lit/decorators.js";
-import { css, html, LitElement } from "lit";
+import { customElement, property } from 'lit/decorators.js'
+import { css, html, LitElement } from 'lit'
 
-@customElement("yawdle-letter")
+@customElement('yawdle-letter')
 export class Letter extends LitElement {
   static get styles() {
     return css`
@@ -66,64 +66,64 @@ export class Letter extends LitElement {
         margin-top: 0.1em;
         margin-bottom: -0.1em;
       }
-    `;
+    `
   }
 
   @property({ reflect: true })
-  data = " ";
+  data = ' '
 
   @property({ reflect: true })
-  state = "blank";
+  state = 'blank'
 
   @property({ reflect: true, type: Boolean })
-  interactive = false;
+  interactive = false
 
   static validateLetter(letter: string) {
-    return letter.replace(/[^a-z ]/g, "")[0];
+    return letter.replace(/[^a-z ]/g, '')[0]
   }
 
   static validateState(state: string): string | undefined {
-    return ["disabled", "blank", "wrong", "partial", "exact", "key"].includes(
-        state,
-      )
+    return ['disabled', 'blank', 'wrong', 'partial', 'exact', 'key'].includes(
+      state,
+    )
       ? state
-      : undefined;
+      : undefined
   }
 
   constructor() {
-    super();
+    super()
   }
 
   attributeChangedCallback(name: string, oldValue: unknown, newValue: unknown) {
     switch (name) {
-      case "data":
+      case 'data':
         {
-          const newValue_ = Letter.validateLetter(newValue as string);
+          const newValue_ = Letter.validateLetter(newValue as string)
           if (newValue_ && newValue_ !== oldValue) {
-            this.data = newValue_;
-            this.requestUpdate();
+            this.data = newValue_
+            this.requestUpdate()
           }
         }
-        break;
+        break
 
-      case "state":
+      case 'state':
         {
-          const newValue_ = Letter.validateState(newValue as string);
+          const newValue_ = Letter.validateState(newValue as string)
           if (newValue_ && newValue_ !== oldValue) {
-            this.state = newValue_;
-            this.requestUpdate();
+            this.state = newValue_
+            this.requestUpdate()
           }
         }
-        break;
+        break
     }
-    this.requestUpdate();
+    this.requestUpdate()
   }
 
   render() {
-    return html` 
-      <div class="${this.state} ${this.interactive ? "interactive" : ""}">
+    return html`
+      <div class="${this.state} ${this.interactive ? 'interactive' : ''}">
         <span>${this.data}</span>
       </div>
-    `;
+    `
   }
 }

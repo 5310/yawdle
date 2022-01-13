@@ -1,9 +1,9 @@
-import { customElement, property } from "lit/decorators.js";
-import { css, html, LitElement } from "lit";
-import "./letter.js";
-import { Letter } from "./letter.js";
+import { customElement, property } from 'lit/decorators.js'
+import { css, html, LitElement } from 'lit'
+import './letter.js'
+import { Letter } from './letter.js'
 
-@customElement("yawdle-keyboard")
+@customElement('yawdle-keyboard')
 export class Keyboard extends LitElement {
   static get styles() {
     return css`
@@ -60,100 +60,112 @@ export class Keyboard extends LitElement {
       #backspace {
         width: 3em;
       }
-    `;
+    `
   }
 
   @property({ reflect: true })
-  enterLabel = "enter";
+  enterLabel = 'enter'
 
   @property({ reflect: true, type: Boolean })
-  canEnter = true;
+  canEnter = true
 
   @property({ reflect: true, type: Boolean })
-  interactive = true;
+  interactive = true
 
   #handleLetterClick(event: MouseEvent) {
     this.dispatchEvent(
-      new CustomEvent("yawdleKey", { detail: (event.target as Letter).data }),
-    );
+      new CustomEvent('yawdleKey', { detail: (event.target as Letter).data }),
+    )
   }
 
   #handleKeyup(key: string) {
     switch (key) {
-      case "Enter":
-        (this.shadowRoot?.querySelector("#enter") as HTMLElement).click();
-        break;
-      case "Backspace":
-        (this.shadowRoot?.querySelector("#backspace") as HTMLElement).click();
-        break;
+      case 'Enter':
+        ;(this.shadowRoot?.querySelector('#enter') as HTMLElement).click()
+        break
+      case 'Backspace':
+        ;(this.shadowRoot?.querySelector('#backspace') as HTMLElement).click()
+        break
       default:
-        const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? "";
+        const letter = key.toLowerCase().match(/^[a-z]$/)?.[0] ?? ''
         if (letter) {
-          (this.shadowRoot?.querySelector(
-            `yawdle-letter[data=${letter}]`,
-          ) as HTMLElement).click();
+          ;(
+            this.shadowRoot?.querySelector(
+              `yawdle-letter[data=${letter}]`,
+            ) as HTMLElement
+          ).click()
         }
-        break;
+        break
     }
   }
 
-  setKey(letter: string, state = "key") {
-    if (!this.shadowRoot) return;
+  setKey(letter: string, state = 'key') {
+    if (!this.shadowRoot) return
     const key = this.shadowRoot.querySelector(
       `yawdle-letter[data="${letter}"]`,
-    ) as Letter;
-    key.state = state;
+    ) as Letter
+    key.state = state
   }
   reset() {
-    if (!this.shadowRoot) return;
+    if (!this.shadowRoot) return
     const keys = [
       ...this.shadowRoot.querySelectorAll(`yawdle-letter`),
-    ] as Letter[];
-    keys.forEach((key) => key.state = "key");
+    ] as Letter[]
+    keys.forEach((key) => (key.state = 'key'))
   }
 
   constructor() {
-    super();
-    addEventListener("keyup", ({ key }) => this.#handleKeyup(key));
+    super()
+    addEventListener('keyup', ({ key }) => this.#handleKeyup(key))
   }
 
   render() {
-    const layout = [
-      "qwertyuiop",
-      "asdfghjkl",
-      "zxcvbnm",
-    ];
-    return html` 
+    const layout = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm']
+    return html`
       <div class="keys ">
-        ${
-      layout.map((row) =>
-        html`<div class='row'>${
-          row.split("").map((letter) =>
-            html
-              `<yawdle-letter data=${letter} state='key' .interactive=${this.interactive} @click="${this.#handleLetterClick}"></yawdle-letter>`
-          )
-        }</div>`
-      )
-    }
-    </div>
-    <div class="control">
-      ${
-      this.interactive
-        ? html`
-      <div class="key ${this.canEnter ? "" : "disabled"}" id="enter" @click="${(
-          _: Event,
-        ) =>
-          this.dispatchEvent(
-            new CustomEvent("yawdleKey", { detail: "Enter" }),
-          )}">${this.enterLabel}</div>
-      <div class="key" id="backspace" @click="${(_: Event) =>
-          this.dispatchEvent(
-            new CustomEvent("yawdleKey", { detail: "Backspace" }),
-          )}">×</div>
-      `
-        : ""
-    }
-    </div>
-    `;
+        ${layout.map(
+          (row) =>
+            html`<div class="row">
+              ${row
+                .split('')
+                .map(
+                  (letter) =>
+                    html`<yawdle-letter
+                      data=${letter}
+                      state="key"
+                      .interactive=${this.interactive}
+                      @click="${this.#handleLetterClick}"
+                    ></yawdle-letter>`,
+                )}
+            </div>`,
+        )}
+      </div>
+      <div class="control">
+        ${this.interactive
+          ? html`
+              <div
+                class="key ${this.canEnter ? '' : 'disabled'}"
+                id="enter"
+                @click="${(_: Event) =>
+                  this.dispatchEvent(
+                    new CustomEvent('yawdleKey', { detail: 'Enter' }),
+                  )}"
+              >
+                ${this.enterLabel}
+              </div>
+              <div
+                class="key"
+                id="backspace"
+                @click="${(_: Event) =>
+                  this.dispatchEvent(
+                    new CustomEvent('yawdleKey', { detail: 'Backspace' }),
+                  )}"
+              >
+                ×
+              </div>
+            `
+          : ''}
+      </div>
+    `
   }
 }

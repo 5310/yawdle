@@ -1,9 +1,9 @@
-import { customElement, property } from "lit/decorators.js";
-import { css, html, LitElement } from "lit";
-import "./letter.js";
-import { Letter } from "./letter.js";
+import { customElement, property } from 'lit/decorators.js'
+import { css, html, LitElement } from 'lit'
+import './letter.js'
+import { Letter } from './letter.js'
 
-@customElement("yawdle-word")
+@customElement('yawdle-word')
 export class Word extends LitElement {
   static get styles() {
     return css`
@@ -18,29 +18,32 @@ export class Word extends LitElement {
         display: flex;
         gap: 0.5em;
       }
-    `;
+    `
   }
 
   @property({ attribute: false })
-  data: { letter: string; state: string }[] = [];
+  data: { letter: string; state: string }[] = []
 
   static validateWord(word: string) {
     return word
-      .split("")
+      .split('')
       .map((letter) => Letter.validateLetter(letter))
       .filter((letter) => letter)
-      .join("");
+      .join('')
   }
 
   constructor() {
-    super();
+    super()
   }
 
   render() {
-    return html` <div>${
-      this.data.map(({ letter, state }) =>
-        html`<yawdle-letter data=${letter} state=${state}></yawdle-letter>`
-      )
-    }</div> `;
+    return html`
+      <div>
+        ${this.data.map(
+          ({ letter, state }) =>
+            html`<yawdle-letter data=${letter} state=${state}></yawdle-letter>`,
+        )}
+      </div>
+    `
   }
 }
