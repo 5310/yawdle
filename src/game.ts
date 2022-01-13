@@ -81,6 +81,7 @@ export class Game extends LitElement {
         padding: 0 0.75em;
         /* border-radius: 2em; */
         background: var(--palette--paper--blank);
+        user-select: none;
       }
       #status .button:hover {
         opacity: 75%;
