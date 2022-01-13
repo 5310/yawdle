@@ -138,6 +138,7 @@ export class Game extends LitElement {
     `;
   }
 
+  #mode: "solve" | "reveal" | "revealed" = "solve";
   #seed = "plagiarism";
   #word = "";
   #attemptsLimit = 6;
@@ -149,11 +150,17 @@ export class Game extends LitElement {
   #success = false;
 
   async #generateGame() {
-    // Get or generate seed
     const params = new URLSearchParams(location.search);
+
+    // Get or generate seed
     this.#seed = params.get("s") ??
       Array.from(self.crypto.getRandomValues(new Uint32Array(1))).join("");
     params.set("s", this.#seed);
+
+    // Check if a challenge is present
+    this.#mode = params.has("c") ? "reveal" : "solve";
+
+    // Reset parameters
     self.history.replaceState({}, "", `${location.pathname}?${params}`);
 
     //TODO: Display encrypted attempts from shared link
@@ -423,11 +430,11 @@ ${url}}`,
 
     return html` 
 
-      <div id="status" >
+      <div id="status" class=${this.#mode}>
         <div class="buttons">
           <div class="button seed ${
       this.#ended ? this.#success ? "success" : "failure" : ""
-    }" @click=${this.#share}>
+    }" @click=${this.#mode === "solve" ? this.#share : undefined}>
             <svg width="1em" height="1em" viewBox="0 0 16 16"fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"/>
             </svg>
@@ -445,7 +452,7 @@ ${url}}`,
     }/${this.#attemptsLimit}</div>
       </div>
 
-      <div id="words" class="${this.#ended ? "ended" : ""}">
+      <div id="words" class="${this.#ended ? "ended" : ""} ${this.#mode}">
         ${
       this.#state.map((data, i) =>
         html`<yawdle-word .data=${data} class="${
@@ -459,7 +466,7 @@ ${url}}`,
     }
       </div> 
 
-      <div id="message">     
+      <div id="message" class=${this.#mode}>     
         ${
       this.#ended
         ? this.#success
@@ -477,7 +484,7 @@ ${url}}`,
       <yawdle-keyboard .interactive=${!this
       .#ended} enterLabel="submit" @yawdleKey=${(
       event: CustomEvent,
-    ) => this.#handleKey(event.detail)}></yawdle-keyboard>
+    ) => this.#handleKey(event.detail)} class=${this.#mode}></yawdle-keyboard>
       
       `;
   }
