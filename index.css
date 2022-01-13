@@ -3,7 +3,7 @@
 }
 
 :root {
-  font-family: 'Bungee', cursive;
+  font-family: 'Bungee', sans-serif;
   font-size: 2vh;
 
   --palette--paper--default: #ffffffff;
@@ -48,14 +48,4 @@ body {
   height: 100vh;
   display: grid;
   place-items: center;
-}
-
-:root.dark .text--solid {
-  font-family: 'Bungee', cursive;
-}
-.text--hairline {
-  font-family: 'Bungee Hairline', cursive;
-}
-.text--shade {
-  font-family: 'Bungee Shade', cursive;
 }
