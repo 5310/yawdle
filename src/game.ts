@@ -293,9 +293,11 @@ export class Game extends LitElement {
         }
         this.#result = 'valid'
         // Persist to localStorage
-        try {
-          localStorage.setItem(this.#seed, JSON.stringify(this.#attempts))
-        } catch (e) {}
+        if (this.#mode === 'solve') {
+          try {
+            localStorage.setItem(this.#seed, JSON.stringify(this.#attempts))
+          } catch (e) {}
+        }
         // Emit attempt as event
         this.dispatchEvent(
           new CustomEvent('yawdleAttemptMade', { detail: this.#state[index] }),
