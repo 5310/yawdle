@@ -56,11 +56,11 @@ export class Game extends LitElement {
       #status {
         grid-auto-flow: column;
         width: 18.7rem;
-        cursor: pointer;
       }
       #status .buttons {
         display: flex;
         gap: 0.25em;
+        cursor: pointer;
       }
       #status .buttons > *:first-child {
         padding-left: 1em;
@@ -590,7 +590,7 @@ ${url}`,
       <div id="message" class=${this.#mode}>
         ${this.#mode === 'unrevealed'
           ? html`
-              <p>Reveal attempt with the solution</p>
+              <p>Reveal shared attempt with the solution</p>
               <yawdle-word
                 class="solution"
                 .data=${this.#solution
@@ -654,7 +654,7 @@ ${url}`,
 
       <yawdle-keyboard
         .interactive=${!this.#ended}
-        enterLabel="submit"
+        enterLabel=${this.#mode === 'solve' ? 'submit' : 'reveal'}
         @yawdleKey=${(event: CustomEvent) => this.#handleKey(event.detail)}
         class=${this.#mode}
       ></yawdle-keyboard>

@@ -39,6 +39,7 @@ export class Keyboard extends LitElement {
         grid-gap: 2em;
         grid-auto-flow: row;
         grid-template-columns: 1fr auto;
+        user-select: none;
       }
       div.control > *:hover {
         opacity: 75%;

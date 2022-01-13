@@ -8,6 +8,7 @@ export class Letter extends LitElement {
       :host {
         box-sizing: border-box;
         font-size: var(--font-size, 2rem);
+        user-select: none;
       }
 
       div {
