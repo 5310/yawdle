@@ -102,6 +102,13 @@ export class Game extends LitElement {
       #status.solve .seed.failure {
         background: var(--palette--paper--wrong);
       }
+      #status:not(.solve) .seed {
+        background: var(--palette--paper--key);
+        color: var(--palette--ink--on-dark);
+      }
+      #status:not(.solve) .seed > svg {
+        fill: var(--palette--ink--on-dark);
+      }
       #status .new > svg {
         margin-left: -0.033em;
         fill: var(--palette--ink--on-light);
@@ -143,9 +150,6 @@ export class Game extends LitElement {
         margin: 0;
         padding: 0;
       }
-      #message.unrevealed > p {
-        opacity: 33%;
-      }
 
       yawdle-keyboard {
         opacity: 75%;
@@ -169,7 +173,8 @@ export class Game extends LitElement {
     const params = new URLSearchParams(location.search)
 
     // Reset parameters if no seed present
-    if (!params.has('s')) location.href = location.pathname
+    if (!params.has('s'))
+      self.history.replaceState({}, '', `${location.pathname}`)
 
     // Check if a challenge is present
     this.#mode = params.has('c') ? 'unrevealed' : 'solve'
@@ -468,6 +473,12 @@ ${url}`,
     }
   }
 
+  #clean() {
+    const params = new URLSearchParams('')
+    params.set('s', this.#seed)
+    location.href = `${location.pathname}?${params}`
+  }
+
   constructor() {
     super()
   }
@@ -510,19 +521,34 @@ ${url}`,
                 ? 'success'
                 : 'failure'
               : ''}"
-            @click=${this.#mode === 'solve' ? this.#share : undefined}
+            @click=${() => {
+              if (this.#mode === 'solve') this.#share()
+              else this.#clean()
+            }}
           >
-            <svg
-              width="1em"
-              height="1em"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"
-              />
-            </svg>
+            ${this.#mode === 'solve'
+              ? html`<svg
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"
+                  />
+                </svg>`
+              : html`<svg
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M7 9.5v3.25c0 .67-.811.999-1.28.53l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5C6.19 2.75 7 3.08 7 3.75V9.5ZM15 9.5H7V7h8v2.5Z"
+                  />
+                </svg>`}
             ${this.#seed}
           </div>
           <div
@@ -564,7 +590,7 @@ ${url}`,
       <div id="message" class=${this.#mode}>
         ${this.#mode === 'unrevealed'
           ? html`
-              <p>Enter the solution to reveal attempts</p>
+              <p>Reveal attempt with the solution</p>
               <yawdle-word
                 class="solution"
                 .data=${this.#solution
