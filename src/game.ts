@@ -215,6 +215,7 @@ export class Game extends LitElement {
           this.#ended = true;
           this.#success = true;
         }
+        this.#result = "valid";
         // Persist to localStorage
         try {
           localStorage.setItem(this.#seed, JSON.stringify(this.#attempts));
