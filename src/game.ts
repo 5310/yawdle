@@ -488,6 +488,7 @@ export class Game extends LitElement {
     }/${this.#attemptsLimit}`
 
     const scorecard = this.#state
+      .slice(0, this.#attempts.length)
       .map((attempt) =>
         attempt
           .map(({ state }) => SCORE_EMOJI[state as string] ?? '⚪')
