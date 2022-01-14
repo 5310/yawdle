@@ -17,7 +17,15 @@ const WORDS: { [word: string]: number } = Object.fromEntries(
     .map((entry) => entry.split(' '))
     .map(([word, freq]) => [word, parseInt(freq, 10)]),
 )
-// const COMMON_WORDS_LIMIT = 2000;
+const WORDS_BUCKET: { [freq: string]: string[] } = Object.entries(WORDS).reduce(
+  (acc, [word, freq]) => {
+    const freq_ = freq.toString().padStart(20, '0')
+    acc[freq_] = acc[freq_] || []
+    acc[freq_].push(word)
+    return acc
+  },
+  {} as { [freq: string]: string[] },
+)
 const RANDOM_BIAS = Math.LN10
 const SCORE_EMOJI: { [key: string]: string } = {
   wrong: '⚪',
@@ -219,8 +227,16 @@ export class Game extends LitElement {
 
     // Select a random word
     const prng = seedrandom(this.#seed)
-    const index = Math.floor(prng() ** RANDOM_BIAS * Object.keys(WORDS).length)
-    this.#word = Object.keys(WORDS)[index]
+    const i = prng()
+    const j = prng()
+    const bucket =
+      WORDS_BUCKET[
+        Object.keys(WORDS_BUCKET)[
+          Math.floor(i ** RANDOM_BIAS * Object.keys(WORDS_BUCKET).length)
+        ]
+      ]
+    this.#word = bucket[Math.floor(j * bucket.length)]
+    console.log(this.#seed, i ** RANDOM_BIAS, j, bucket, this.#word)
 
     // Reset the game
     this.#attempts = []
