@@ -655,7 +655,7 @@ ${url}`,
         </div>
         <div class="revelation">
           <p>A player shared this attempt at solving this puzzle</p>
-          <p><a href="${this.#clean()}?">Solve it</a> for yourself</p>
+          <p><a href="${this.#clean()}">Solve it</a> for yourself</p>
           <p>Enter the solution below to reveal their attempt</p>
         </div>
       </div>
