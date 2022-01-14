@@ -236,7 +236,6 @@ export class Game extends LitElement {
         ]
       ]
     this.#word = bucket[Math.floor(j * bucket.length)]
-    console.log(this.#seed, i ** RANDOM_BIAS, j, bucket, this.#word)
 
     // Reset the game
     this.#attempts = []
