@@ -26,7 +26,7 @@ const WORDS_BUCKET: { [freq: string]: string[] } = Object.entries(WORDS).reduce(
   },
   {} as { [freq: string]: string[] },
 )
-const RANDOM_BIAS = Math.LN10
+const RANDOM_BIAS = 3
 const SCORE_EMOJI: { [key: string]: string } = {
   wrong: '⚪',
   partial: '🟡',
