@@ -374,6 +374,8 @@ export class Game extends LitElement {
           duration: 3000,
           fill: 'forwards',
         })
+      } else {
+        $message.getAnimations().forEach((animation) => animation.cancel())
       }
     }
 
