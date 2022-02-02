@@ -69,6 +69,7 @@ export class Game extends LitElement {
         right: 0;
         padding: 0.5em;
         cursor: pointer;
+        opacity: 50%;
       }
       #readme:hover {
         opacity: 75%;
