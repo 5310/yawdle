@@ -62,6 +62,30 @@ export class Game extends LitElement {
         text-decoration: underline solid 0.25em;
       }
 
+      #readme {
+        display: flex;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0.5em;
+        cursor: pointer;
+      }
+      #readme:hover {
+        opacity: 75%;
+      }
+      #readme a {
+        box-sizing: border-box;
+        width: 2em;
+        height: 2em;
+        display: grid;
+        place-items: center;
+        border-radius: 1em;
+        opacity: 33%;
+      }
+      #readme svg {
+        fill: var(--palette--ink--on-light);
+      }
+
       #status {
         grid-auto-flow: column;
         width: 18.7rem;
@@ -149,26 +173,43 @@ export class Game extends LitElement {
       #words:not(.unrevealed) .words > yawdle-word.attempted {
         opacity: 100%;
       }
-      #words .revelation {
+      #words .information {
         z-index: 100;
         box-sizing: border-box;
         width: 19em;
         padding: 0.5em;
         border-radius: 1.5em;
         align-content: center;
-        line-height: 1.5em;
-        text-align: center;
+        line-height: 1em;
         background: var(--palette--paper--blank);
         backdrop-filter: blur(8px);
+        place-items: start;
+        padding: 0 1.5em;
       }
-      #words .revelation > p {
+      #words .information p {
         margin: 0;
+      }
+      #words .information p.small {
+        font-size: 0.75rem;
+        opacity: 0.75;
+      }
+      #words yawdle-letter {
+        font-size: 0.75rem;
       }
       #words:not(.unrevealed) .revelation {
         display: none;
       }
+      #words.unrevealed .instruction {
+        display: none;
+      }
+      #words .instruction > div {
+        display: grid;
+        place-items: center;
+        grid-template-columns: auto 1fr;
+        gap: 1em;
+      }
 
-      #message {
+      #words #message {
         height: 5em;
         text-align: center;
       }
@@ -434,6 +475,8 @@ export class Game extends LitElement {
   }
 
   #handleKey(key: string) {
+    // Hide info modal
+    this.#manageInfo(false)
     switch (this.#mode) {
       case 'solve':
         switch (key) {
@@ -478,6 +521,20 @@ export class Game extends LitElement {
         }
         break
     }
+  }
+
+  #manageInfo(set?: boolean) {
+    const $ = this.shadowRoot?.querySelector(
+      '#words .instruction',
+    ) as HTMLElement
+    $.style.display =
+      set !== undefined
+        ? set
+          ? 'grid'
+          : 'none'
+        : $.style.display === 'none'
+        ? 'grid'
+        : 'none'
   }
 
   async #share() {
@@ -595,42 +652,61 @@ ${url}`,
 
   render() {
     return html`
+      <div 
+        id="readme"
+        @click=${(_: Event) => {
+          this.#manageInfo()
+        }}
+          >
+          <svg
+            width="1em"
+            height="1em"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 .25a7.751 7.751 0 0 0 0 15.5A7.75 7.75 0 1 0 8 .25Zm0 3.438a1.313 1.313 0 1 1 0 2.625 1.313 1.313 0 0 1 0-2.625Zm1.75 7.937a.375.375 0 0 1-.375.375h-2.75a.375.375 0 0 1-.375-.375v-.75c0-.207.168-.375.375-.375H7v-2h-.375a.375.375 0 0 1-.375-.375v-.75c0-.207.168-.375.375-.375h2c.207 0 .375.168.375.375V10.5h.375c.207 0 .375.168.375.375v.75Z"
+            />
+          </svg>
+      </div>
+      
       <div id="status" class=${this.#mode}>
         <div class="buttons">
           <div
-            class="button seed ${this.#ended
-              ? this.#success
-                ? 'success'
-                : 'failure'
-              : ''}"
+            class="button seed ${
+              this.#ended ? (this.#success ? 'success' : 'failure') : ''
+            }"
             @click=${() => {
               if (this.#mode === 'solve') this.#share()
               else this.#clean(true)
             }}
           >
-            ${this.#mode === 'solve'
-              ? html`<svg
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"
-                  />
-                </svg>`
-              : html`<svg
-                  width="1em"
-                  height="1em"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M7 9.5v3.25c0 .67-.811.999-1.28.53l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5C6.19 2.75 7 3.08 7 3.75V9.5ZM15 9.5H7V7h8v2.5Z"
-                  />
-                </svg>`}
+            ${
+              this.#mode === 'solve'
+                ? html`<svg
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 10c-.707 0-1.356.244-1.868.653L6.929 8.651a3.017 3.017 0 0 0 0-1.302l3.203-2.002a3 3 0 1 0-1.06-1.696L5.867 5.653a3 3 0 1 0 0 4.694l3.203 2.002A3 3 0 1 0 12 10Z"
+                    />
+                  </svg>`
+                : html`<svg
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M7 9.5v3.25c0 .67-.811.999-1.28.53l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5C6.19 2.75 7 3.08 7 3.75V9.5ZM15 9.5H7V7h8v2.5Z"
+                    />
+                  </svg>`
+            }
             ${this.#seed}
           </div>
           <div
@@ -651,8 +727,9 @@ ${url}`,
           </div>
         </div>
         <div class="attempts">
-          ${this.#ended && !this.#success ? 'X' : this.#attempts.length}/${this
-            .#attemptsLimit}
+          ${this.#ended && !this.#success ? 'X' : this.#attempts.length}/${
+      this.#attemptsLimit
+    }
         </div>
       </div>
 
@@ -671,75 +748,112 @@ ${url}`,
               ></yawdle-word>`,
           )}
         </div>
-        <div class="revelation">
+        <div class="information revelation">
           <p>A player shared this attempt at solving this puzzle</p>
           <p><a href="${this.#clean()}">Solve it</a> for yourself</p>
           <p>Enter the solution below to reveal their attempt</p>
         </div>
+        <div class="information instruction">
+          <p>
+            Yawdle is Yet Another <a href=""></a>Wordle</a> DupLicatE!
+          </p>
+          <p>
+            Now with on-demand shareable puzzles, fully offline, no timezones!
+          </p>
+          <p class="small">
+            To play, guess a 5-letter word in six attempts—
+          </p>
+          <div>
+            <yawdle-letter state="exact"></yawdle-letter>
+            <p class="small">
+              The letter is in the word and at the correct spot
+            </p>
+          </div>
+          <div>
+            <yawdle-letter state="partial"></yawdle-letter>
+            <p class="small">
+              The letter is in the word but not at the correct spot
+            </p>
+          </div>
+          <div>
+            <yawdle-letter state="wrong"></yawdle-letter>
+            <p class="small">The letter is not in the word</p>
+          </div>
+          <p class="small">Type any letter to begin!</p>
+        </div>
       </div>
 
       <div id="message" class=${this.#mode}>
-        ${this.#mode === 'unrevealed'
-          ? html`
-              <yawdle-word
-                class="solution"
-                .data=${this.#solution
-                  .slice(0, this.#word.length)
-                  .padEnd(this.#word.length, ' ')
-                  .split('')
-                  .map((letter) => ({
-                    letter: ' ',
-                    state: letter === ' ' ? 'blank' : 'key',
-                  }))}
-              >
-              </yawdle-word>
-            `
-          : ''}
-        ${this.#mode === 'revealed'
-          ? this.#ended
-            ? this.#success
-              ? html`<p class="success">
-                  This player solved
-                  <a
-                    target="_blank"
-                    href="https://en.wiktionary.org/wiki/${this.#word}#English"
-                    >${this.#word}</a
-                  >
-                  in ${this.#attempts.length}
-                  ${this.#attempts.length === 1 ? 'turn' : 'turns'}
-                </p>`
-              : html`<p class="failure">
-                  This player failed to solve
-                  <a
-                    target="_blank"
-                    href="https://en.wiktionary.org/wiki/${this.#word}#English"
-                    >${this.#word}</a
-                  >
-                </p>`
-            : this.#result === 'redundant'
-            ? html`<p class="redundant">Try a new word</p>`
-            : this.#result === 'invalid'
-            ? html`<p class="invalid">Not on the list</p>`
-            : html`<p class="blank">...</p>`
-          : ''}
-        ${this.#mode === 'solve'
-          ? this.#ended
-            ? this.#success
-              ? html`<p class="success">
-                  You got it, it's
-                  <a
-                    target="_blank"
-                    href="https://en.wiktionary.org/wiki/${this.#word}#English"
-                    >${this.#word}</a
-                  >!
-                </p>`
-              : html`<p class="failure">Better luck next time!</p>`
-            : this.#result === 'redundant'
-            ? html`<p class="redundant">Try a new word</p>`
-            : this.#result === 'invalid'
-            ? html`<p class="invalid">Not on the list</p>`
-            : html`<p class="blank">...</p>`
-          : ''}
+        ${
+          this.#mode === 'unrevealed'
+            ? html`
+                <yawdle-word
+                  class="solution"
+                  .data=${this.#solution
+                    .slice(0, this.#word.length)
+                    .padEnd(this.#word.length, ' ')
+                    .split('')
+                    .map((letter) => ({
+                      letter: ' ',
+                      state: letter === ' ' ? 'blank' : 'key',
+                    }))}
+                >
+                </yawdle-word>
+              `
+            : ''
+        }
+        ${
+          this.#mode === 'revealed'
+            ? this.#ended
+              ? this.#success
+                ? html`<p class="success">
+                    This player solved
+                    <a
+                      target="_blank"
+                      href="https://en.wiktionary.org/wiki/${this
+                        .#word}#English"
+                      >${this.#word}</a
+                    >
+                    in ${this.#attempts.length}
+                    ${this.#attempts.length === 1 ? 'turn' : 'turns'}
+                  </p>`
+                : html`<p class="failure">
+                    This player failed to solve
+                    <a
+                      target="_blank"
+                      href="https://en.wiktionary.org/wiki/${this
+                        .#word}#English"
+                      >${this.#word}</a
+                    >
+                  </p>`
+              : this.#result === 'redundant'
+              ? html`<p class="redundant">Try a new word</p>`
+              : this.#result === 'invalid'
+              ? html`<p class="invalid">Not on the list</p>`
+              : html`<p class="blank">...</p>`
+            : ''
+        }
+        ${
+          this.#mode === 'solve'
+            ? this.#ended
+              ? this.#success
+                ? html`<p class="success">
+                    You got it, it's
+                    <a
+                      target="_blank"
+                      href="https://en.wiktionary.org/wiki/${this
+                        .#word}#English"
+                      >${this.#word}</a
+                    >!
+                  </p>`
+                : html`<p class="failure">Better luck next time!</p>`
+              : this.#result === 'redundant'
+              ? html`<p class="redundant">Try a new word</p>`
+              : this.#result === 'invalid'
+              ? html`<p class="invalid">Not on the list</p>`
+              : html`<p class="blank">...</p>`
+            : ''
+        }
       </div>
 
       <yawdle-keyboard

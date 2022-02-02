@@ -58,22 +58,3 @@ header {
   display: flex;
   flex-direction: row-reverse;
 }
-
-#readme {
-  display: flex;
-}
-#readme:hover {
-  opacity: 75%;
-}
-#readme a {
-  box-sizing: border-box;
-  width: 2em;
-  height: 2em;
-  display: grid;
-  place-items: center;
-  border-radius: 1em;
-  opacity: 33%;
-}
-#readme svg {
-  fill: var(--palette--ink--on-light);
-}
